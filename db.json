@@ -1,0 +1,761 @@
+{
+  "home": [
+    {
+      "id": "1",
+      "name": "bg-adviticement",
+      "vedio": "https://www.youtube.com/watch?v=dhXCBR2Brkk"
+    }
+  ],
+  "jbl": [
+    {
+      "id": "1",
+      "name": "Sony WH-1000XM5",
+      "slug": "sony-wh-1000xm5",
+      "brand": "Sony",
+      "category": "wireless",
+      "mainCategory": "Wireless",
+      "price": 29999,
+      "currency": "INR",
+      "isdeal": true,
+      "stock": "10",
+      "images": [
+        "https://d1ncau8tqf99kp.cloudfront.net/converted/103364_original_local_1200x1050_v3_converted.webp"
+      ],
+      "description": "Industry-leading noise canceling headphones with up to 30 hours battery."
+    },
+    {
+      "id": "2",
+      "name": "Boat Rockerz 550",
+      "slug": "boat-rockerz-550",
+      "brand": "boAt",
+      "category": "wireless",
+      "mainCategory": "Wireless",
+      "price": 1999,
+      "currency": "INR",
+      "isdeal": "true",
+      "stock": 50,
+      "images": [
+        "https://m.media-amazon.com/images/I/61gYxcIGjvL.SX522.jpg"
+      ],
+      "description": "Affordable wireless over-ear headphones with immersive sound."
+    },
+    {
+      "id": "3",
+      "name": "JBL Tune 760NC",
+      "slug": "jbl-tune-760nc",
+      "brand": "JBL",
+      "category": "wireless",
+      "mainCategory": "Wireless",
+      "price": 7499,
+      "currency": "INR",
+      "isdeal": "true",
+      "stock": 25,
+      "images": [
+        "https://m.media-amazon.com/images/I/71TvdUf4kyL.SX522.jpg"
+      ],
+      "description": "Lightweight, foldable headphones with active noise cancelling and deep bass."
+    },
+    {
+      "id": "4",
+      "name": "Bose QuietComfort 45",
+      "slug": "bose-quietcomfort-45",
+      "brand": "Bose",
+      "category": "wireless",
+      "mainCategory": "Wireless",
+      "price": 29990,
+      "currency": "INR",
+      "stock": 10,
+      "images": [
+        "https://m.media-amazon.com/images/I/31n8zJ5mBDL.SX300_SY300_QL70_FMwebp.jpg"
+      ],
+      "description": "Premium noise-cancelling headphones with balanced sound and all-day comfort."
+    },
+    {
+      "id": "5",
+      "name": "Sennheiser HD 450BT",
+      "slug": "sennheiser-hd-450bt",
+      "brand": "Sennheiser",
+      "category": "wireless",
+      "mainCategory": "Wireless",
+      "price": 8990,
+      "currency": "INR",
+      "stock": 20,
+      "images": [
+        "https://m.media-amazon.com/images/I/61h8NTXn5oL.UF1000,1000_QL80.jpg"
+      ],
+      "description": "Wireless headphones with deep dynamic bass, Bluetooth 5.0, and 30-hour battery.",
+      "isdeal": true
+    },
+    {
+      "id": "6",
+      "name": "Apple AirPods Max",
+      "slug": "apple-airpods-max",
+      "brand": "Apple",
+      "category": "wireless",
+      "mainCategory": "Luxury",
+      "price": 59900,
+      "currency": "INR",
+      "stock": 8,
+      "isdeal": "true",
+      "images": [
+        "https://www.dimprice.co.uk/image/cache/png/apple-airpods-max/silver/apple-airpods-max-silver-04-550x550.png"
+      ],
+      "description": "Over-ear headphones with high-fidelity audio, computational sound, and spatial audio."
+    },
+    {
+      "id": "7",
+      "name": "Skullcandy Crusher Evo",
+      "slug": "skullcandy-crusher-evo",
+      "brand": "Skullcandy",
+      "category": "wireless",
+      "mainCategory": "Wireless",
+      "price": 13999,
+      "currency": "INR",
+      "stock": 18,
+      "images": [
+        "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcSGhNDyBudvbHfqxY3zzRwxg6ZpGf_2TgFkHQ1BXhVmoyavvyHBT6nuvgtLsxVYa9_XEiPjJnfXSBKQ-wo7M9B6nYRbaIawS2g6YpHTTWcJ"
+      ],
+      "description": "Wireless headphones with adjustable sensory bass and 40 hours of battery life."
+    },
+    {
+      "id": "8",
+      "name": "OneOdio Pro-50",
+      "slug": "oneodio-pro-50",
+      "brand": "OneOdio",
+      "category": "wired",
+      "mainCategory": "Studio",
+      "price": 3499,
+      "currency": "INR",
+      "stock": 30,
+      "images": [
+        "https://m.media-amazon.com/images/I/71nT-y33zyL.SX679.jpg"
+      ],
+      "description": "Wired studio headphones with 50mm drivers and professional sound quality."
+    },
+    {
+      "id": "9",
+      "name": "AKG K371",
+      "slug": "akg-k371",
+      "brand": "AKG",
+      "category": "wired",
+      "mainCategory": "Studio",
+      "price": 11490,
+      "currency": "INR",
+      "stock": 12,
+      "images": [
+        "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcSY_yAR5ezKIpPZD-JgmT8cviBpwCB1d-uzg0XEokP_gH95J0ZXKebXgaBxXBcKf689Ra4wiTdwgamuty7G5iB2tg8l9IwHrshaR9r4nVhDxj0V_hzWpOMTBg"
+      ],
+      "description": "Professional studio headphones tuned for accuracy with oval earcups."
+    },
+    {
+      "id": "10",
+      "name": "Anker Soundcore Life Q30",
+      "slug": "anker-soundcore-life-q30",
+      "brand": "Anker",
+      "category": "wireless",
+      "mainCategory": "Wireless",
+      "price": 7999,
+      "currency": "INR",
+      "stock": 22,
+      "images": [
+        "https://m.media-amazon.com/images/I/31JvFCUXHZL.SX300_SY300_QL70_FMwebp.jpg"
+      ],
+      "description": "Hybrid active noise cancelling headphones with 40 hours playtime and Hi-Res audio."
+    },
+    {
+      "id": "11",
+      "name": "Sony WF-1000XM5",
+      "slug": "sony-wf-1000xm5",
+      "brand": "Sony",
+      "category": "earbuds",
+      "mainCategory": "Earbuds",
+      "price": 24990,
+      "currency": "INR",
+      "stock": 20,
+      "images": [
+        "https://store.sony.com.au/dw/image/v2/ABBC_PRD/on/demandware.static/-/Sites-sony-master-catalog/default/dw9194429e/images/WF1000XM5B/WF1000XM5B_2.png?sw=710&sh=710&sm=fit"
+      ],
+      "description": "Flagship true wireless earbuds with industry-leading noise cancellation and immersive sound.",
+      "isdeal": true
+    },
+    {
+      "id": "13",
+      "name": "boAt Rockerz 255 Pro+",
+      "slug": "boat-rockerz-255-pro-plus",
+      "brand": "boAt",
+      "category": "neckband",
+      "mainCategory": "Neckband",
+      "price": 1099,
+      "currency": "INR",
+      "stock": 100,
+      "images": [
+        "https://m.media-amazon.com/images/I/51Lqm2rKvHL.SX522.jpg"
+      ],
+      "description": "Wireless neckband with 60 hours playback, IPX7 rating, and fast charging."
+    },
+    {
+      "id": "14",
+      "name": "Sennheiser Momentum 4 Wireless",
+      "slug": "sennheiser-momentum-4-wireless",
+      "brand": "Sennheiser",
+      "category": "wireless",
+      "mainCategory": "Luxury",
+      "price": 34990,
+      "currency": "INR",
+      "stock": 10,
+      "images": [
+        "https://www.hifi-regler.de/images_c/fm/products/sennheiser/sennheiser_momentum_ws.p1140x855.jpg"
+      ],
+      "description": "High-end wireless headphones with 60-hour battery life and adaptive noise cancellation."
+    },
+    {
+      "id": "16",
+      "name": "Marshall Major IV",
+      "slug": "marshall-major-iv",
+      "brand": "Marshall",
+      "category": "on-ear",
+      "mainCategory": "Wireless",
+      "price": 11999,
+      "currency": "INR",
+      "stock": 25,
+      "images": [
+        "https://www.marshallheadphones.com/dw/image/v2/BCQL_PRD/on/demandware.static/-/Sites-zs-master-catalog/default/dw08944168/images/marshall/headphones/major-iv/large/pos-marshall-major-iv-black-01.png"
+      ],
+      "description": "Iconic on-ear headphones with 80+ hours wireless playtime and classic rock sound."
+    },
+    {
+      "id": "17",
+      "name": "Jabra Elite 85h",
+      "slug": "jabra-elite-85h",
+      "brand": "Jabra",
+      "category": "wireless",
+      "mainCategory": "Wireless",
+      "price": 16999,
+      "currency": "INR",
+      "stock": 18,
+      "images": [
+        "https://www.jabra.com/-/media/Images/Products/Jabra-Elite-85h/Product/elite_85h_titanium_02.png?w=600&la=en&hash=941F8A76CBE82F9A0589525DBA41E95F5F5A190A&hash=941F8A76CBE82F9A0589525DBA41E95F5F5A190A"
+      ],
+      "description": "Smart noise-cancelling headphones with rain resistance and 36-hour battery."
+    },
+    {
+      "id": "18",
+      "name": "Shure AONIC 50",
+      "slug": "shure-aonic-50",
+      "brand": "Shure",
+      "category": "wireless",
+      "mainCategory": "Studio",
+      "price": 34990,
+      "currency": "INR",
+      "stock": 10,
+      "images": [
+        "https://audio46.com/cdn/shop/files/AONIC50_Gen2_SBH50G2-BK_Front_Swivel_OnWhite_HRcopy_1200x1200.jpg?v=1693578640"
+      ],
+      "description": "Studio-quality wireless headphones with adjustable noise cancellation and premium build."
+    },
+    {
+      "id": "19",
+      "name": "Audio-Technica ATH-M50x",
+      "slug": "audio-technica-ath-m50x",
+      "brand": "Audio-Technica",
+      "category": "wired",
+      "mainCategory": "Studio",
+      "price": "37000",
+      "currency": "INR",
+      "stock": 20,
+      "images": [
+        "https://th.bing.com/th/id/R.a8585cba5aa0cbaf9e0226e9aa105442?rik=QvYQEfH5vdjN9Q&riu=http%3a%2f%2fwww.bhphotovideo.com%2fimages%2fimages2500x2500%2faudio_technica_ath_m50xdg_lmtd_edtion_pro_1113993.jpg&ehk=6inThLcvp42cMDWHVi%2f1Z0%2bvHUoTTFrB8CtmJCsrnLc%3d&risl=&pid=ImgRaw&r=0"
+      ],
+      "description": "Legendary studio headphones with accurate sound and durable design."
+    },
+    {
+      "id": "20",
+      "name": "Samsung Galaxy Buds2 Pro",
+      "slug": "samsung-galaxy-buds2-pro",
+      "brand": "Samsung",
+      "category": "earbuds",
+      "mainCategory": "Earbuds",
+      "price": 17999,
+      "currency": "INR",
+      "stock": 30,
+      "images": [
+        "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/6510/6510544cv12d.jpg"
+      ],
+      "description": "Hi-Fi wireless earbuds with 24-bit audio and intelligent ANC."
+    },
+    {
+      "id": "21",
+      "name": "Realme Buds Wireless 3",
+      "slug": "realme-buds-wireless-3",
+      "brand": "Realme",
+      "category": "neckband",
+      "mainCategory": "Neckband",
+      "price": 1799,
+      "currency": "INR",
+      "stock": 60,
+      "images": [
+        "https://adminapi.applegadgetsbd.com/storage/media/large/realme-Buds-Wireless-3-Bass-Yellow-5884.jpg"
+      ],
+      "description": "Affordable neckband with ANC, 40-hour battery, and fast charging."
+    },
+    {
+      "id": "22",
+      "name": "HyperX Cloud Alpha",
+      "slug": "hyperx-cloud-alpha",
+      "brand": "HyperX",
+      "category": "wired",
+      "mainCategory": "Gaming",
+      "price": 8990,
+      "currency": "INR",
+      "stock": 15,
+      "images": [
+        "https://cdn.shopify.com/s/files/1/0564/3612/9997/products/hyperx_cloud_alpha_blackred_4_detachable_2048x2048.jpg?v=1662420668"
+      ],
+      "description": "Gaming headphones with dual chamber drivers and detachable mic."
+    },
+    {
+      "id": "23",
+      "name": "Sony LinkBuds S",
+      "slug": "sony-linkbuds-s",
+      "brand": "Sony",
+      "category": "earbuds",
+      "mainCategory": "Earbuds",
+      "price": 13990,
+      "currency": "INR",
+      "stock": 25,
+      "images": [
+        "https://d1ncau8tqf99kp.cloudfront.net/converted/108046_original_local_1200x1050_converted.webp"
+      ],
+      "description": "Compact TWS earbuds with adaptive sound control and ANC."
+    },
+    {
+      "id": "24",
+      "name": "Boult Audio Curve ANC",
+      "slug": "boult-curve-anc",
+      "brand": "Boult",
+      "category": "neckband",
+      "mainCategory": "Neckband",
+      "price": 1499,
+      "currency": "INR",
+      "stock": 80,
+      "images": [
+        "https://img3.gadgetsnow.com/gd/images/products/additional/original/G424305_View_7/accessories/headphones-headsets/boult-audio-curve-anc-with-active-noice-cancellation-enc-mic-60ms-ultra-low-latency-in-the-ear-gaming-bluetooth-headset-green-.jpg"
+      ],
+      "description": "Budget neckband with ANC, 30-hour battery, and IPX5 rating."
+    },
+    {
+      "id": "25",
+      "name": "AKG N700NC M2",
+      "slug": "akg-n700nc-m2",
+      "brand": "AKG",
+      "category": "wireless",
+      "mainCategory": "Studio",
+      "price": 24990,
+      "currency": "INR",
+      "stock": 12,
+      "images": [
+        "https://m.media-amazon.com/images/I/71fhdVDtt-L._AC_SL1500_.jpg"
+      ],
+      "description": "Premium wireless headphones with AKG signature sound and adaptive noise cancelling."
+    },
+    {
+      "id": "46",
+      "name": "Razer BlackShark V2",
+      "slug": "razer-blackshark-v2",
+      "brand": "Razer",
+      "category": "wired",
+      "mainCategory": "Gaming",
+      "price": 8999,
+      "currency": "INR",
+      "stock": 20,
+      "images": [
+        "https://m.media-amazon.com/images/I/716l0ZNzrpL._AC_SL1500_.jpg"
+      ],
+      "description": "Esports-grade wired headphones with THX spatial audio and detachable mic."
+    },
+    {
+      "id": "47",
+      "name": "JBL Endurance Peak 3",
+      "slug": "jbl-endurance-peak-3",
+      "brand": "JBL",
+      "category": "earbuds",
+      "mainCategory": "Fitness",
+      "price": 6999,
+      "currency": "INR",
+      "stock": 40,
+      "images": [
+        "https://www.jbl.com.ph/on/demandware.static/-/Sites-masterCatalog_Harman/default/dw8b95507f/1.JBL_ENDURANCE_PEAK_3_Product%20Image_Hero_Blue.png"
+      ],
+      "description": "Sport-focused TWS earbuds with Powerhook design and IP68 waterproof rating."
+    },
+    {
+      "id": "48",
+      "name": "Sony MDR-7506",
+      "slug": "sony-mdr-7506",
+      "brand": "Sony",
+      "category": "wired",
+      "mainCategory": "Studio",
+      "price": 8490,
+      "currency": "INR",
+      "stock": 15,
+      "images": [
+        "https://www.bhphotovideo.com/images/images2500x2500/Sony_MDR_7506_MDR_7506_Headphone_49510.jpg"
+      ],
+      "description": "Professional studio headphones with precise sound and foldable design."
+    },
+    {
+      "id": "49",
+      "name": "Bose Sport Earbuds",
+      "slug": "bose-sport-earbuds",
+      "brand": "Bose",
+      "category": "earbuds",
+      "mainCategory": "Fitness",
+      "price": 17990,
+      "currency": "INR",
+      "stock": 12,
+      "images": [
+        "https://assets.bose.com/content/dam/Bose_DAM/Web/consumer_electronics/global/products/headphones/earbuds_500/product_silo_images/seb_product_slideshow_white_ec_05_web.jpg/jcr:content/renditions/cq5dam.web.1280.1280.jpeg"
+      ],
+      "description": "Secure-fit wireless earbuds with lifelike sound and sweat resistance."
+    },
+    {
+      "id": "50",
+      "name": "Skullcandy Push Active",
+      "slug": "skullcandy-push-active",
+      "brand": "Skullcandy",
+      "category": "earbuds",
+      "mainCategory": "Fitness",
+      "price": 5999,
+      "currency": "INR",
+      "stock": 30,
+      "images": [
+        "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/6480/6480370_rd.jpg"
+      ],
+      "description": "Adventure-ready earbuds with voice control and 44-hour battery life."
+    },
+    {
+      "id": "51",
+      "name": "Sennheiser IE 200",
+      "slug": "sennheiser-ie-200",
+      "brand": "Sennheiser",
+      "category": "wired",
+      "mainCategory": "Studio",
+      "price": 14990,
+      "currency": "INR",
+      "stock": 10,
+      "images": [
+        "https://my-test-11.slatic.net/p/eb2c5a4927137c48fa29d2cce82bed48.jpg"
+      ],
+      "description": "Audiophile-grade in-ear monitors with balanced sound and ergonomic fit."
+    },
+    {
+      "id": "52",
+      "name": "Apple AirPods Pro (2nd Gen)",
+      "slug": "apple-airpods-pro-2",
+      "brand": "Apple",
+      "category": "earbuds",
+      "mainCategory": "Luxury",
+      "price": 26990,
+      "currency": "INR",
+      "stock": 15,
+      "images": [
+        "https://tse1.mm.bing.net/th/id/OIP.134VJ44OStJo8DrF8-JnyAHaHa?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3"
+      ],
+      "description": "Advanced TWS earbuds with adaptive transparency, ANC, and personalized spatial audio."
+    },
+    {
+      "id": "1760072479453",
+      "name": "boAt Rockerz 650 Pro ",
+      "brand": "boAt ",
+      "price": "2799",
+      "images": [
+        "https://www.boat-lifestyle.com/cdn/shop/files/mainimage_458147a3-eabc-4816-a1c0-429c950422ad_1500x.png?v=1741067646"
+      ],
+      "description": "Wireless Headphone with 80 Hours Playback, Dolby Audio, Touch & Swipe Controls",
+      "stock": 10
+    }
+  ],
+  "login": [],
+  "user": [
+    {
+      "id": "0a72",
+      "name": "Admin",
+      "email": "admin@gmail.com",
+      "password": "12345",
+      "role": "Admin",
+      "cart": [],
+      "quantity": 1
+    },
+    {
+      "id": "ce4e",
+      "name": "yadhu",
+      "email": "yadukrishnangta@gmail.com",
+      "password": "123456",
+      "contact": [],
+      "cart": [],
+      "wishes": [],
+      "myorder": [],
+      "role": "user",
+      "create": "2025-10-07T09:20:55.482Z",
+      "blocked": false
+    },
+    {
+      "id": "52bc",
+      "name": "yadhu",
+      "email": "yadukrishnanp@gmail.com",
+      "password": "12346",
+      "cart": [
+        {
+          "id": "2",
+          "name": "Boat Rockerz 550",
+          "slug": "boat-rockerz-550",
+          "brand": "boAt",
+          "category": "wireless",
+          "mainCategory": "Wireless",
+          "price": 1999,
+          "currency": "INR",
+          "isdeal": "true",
+          "stock": 50,
+          "images": [
+            "https://m.media-amazon.com/images/I/61gYxcIGjvL.SX522.jpg"
+          ],
+          "description": "Affordable wireless over-ear headphones with immersive sound.",
+          "quantity": 4
+        }
+      ],
+      "wishes": [
+        "52"
+      ],
+      "contact": [],
+      "myorder": [
+        {
+          "formData": {
+            "fullName": "YaduKrishnan p",
+            "address": "kdy",
+            "phone": "01234567899"
+          },
+          "items": [
+            {
+              "id": "2",
+              "name": "Boat Rockerz 550",
+              "slug": "boat-rockerz-550",
+              "brand": "boAt",
+              "category": "wireless",
+              "mainCategory": "Wireless",
+              "price": 1999,
+              "currency": "INR",
+              "isdeal": "true",
+              "stock": 50,
+              "images": [
+                "https://m.media-amazon.com/images/I/61gYxcIGjvL.SX522.jpg"
+              ],
+              "description": "Affordable wireless over-ear headphones with immersive sound.",
+              "quantity": 1
+            }
+          ],
+          "total": 2248.9,
+          "date": "2025-10-08T09:48:31.348Z",
+          "status": "Delivered"
+        },
+        {
+          "formData": {
+            "fullName": "YaduKrishnan p",
+            "address": "kdy",
+            "phone": "01234567899"
+          },
+          "items": [
+            {
+              "id": "2",
+              "name": "Boat Rockerz 550",
+              "slug": "boat-rockerz-550",
+              "brand": "boAt",
+              "category": "wireless",
+              "mainCategory": "Wireless",
+              "price": 1999,
+              "currency": "INR",
+              "isdeal": "true",
+              "stock": 50,
+              "images": [
+                "https://m.media-amazon.com/images/I/61gYxcIGjvL.SX522.jpg"
+              ],
+              "description": "Affordable wireless over-ear headphones with immersive sound.",
+              "quantity": 2
+            },
+            {
+              "id": "1",
+              "name": "Sony WH-1000XM5",
+              "slug": "sony-wh-1000xm5",
+              "brand": "Sony",
+              "category": "wireless",
+              "mainCategory": "Wireless",
+              "price": 29999,
+              "currency": "INR",
+              "isdeal": "true",
+              "stock": 15,
+              "images": [
+                "https://d1ncau8tqf99kp.cloudfront.net/converted/103364_original_local_1200x1050_v3_converted.webp"
+              ],
+              "description": "Industry-leading noise canceling headphones with up to 30 hours battery.",
+              "quantity": 1
+            }
+          ],
+          "total": 37446.7,
+          "date": "2025-10-08T09:50:30.832Z",
+          "status": "Delivered"
+        },
+        {
+          "formData": {
+            "fullName": "YaduKrishnan p",
+            "address": "kdy",
+            "phone": "01234567899"
+          },
+          "items": [
+            {
+              "id": "2",
+              "name": "Boat Rockerz 550",
+              "slug": "boat-rockerz-550",
+              "brand": "boAt",
+              "category": "wireless",
+              "mainCategory": "Wireless",
+              "price": 1999,
+              "currency": "INR",
+              "isdeal": "true",
+              "stock": 50,
+              "images": [
+                "https://m.media-amazon.com/images/I/61gYxcIGjvL.SX522.jpg"
+              ],
+              "description": "Affordable wireless over-ear headphones with immersive sound.",
+              "quantity": 2
+            },
+            {
+              "id": "1",
+              "name": "Sony WH-1000XM5",
+              "slug": "sony-wh-1000xm5",
+              "brand": "Sony",
+              "category": "wireless",
+              "mainCategory": "Wireless",
+              "price": 29999,
+              "currency": "INR",
+              "isdeal": "true",
+              "stock": 15,
+              "images": [
+                "https://d1ncau8tqf99kp.cloudfront.net/converted/103364_original_local_1200x1050_v3_converted.webp"
+              ],
+              "description": "Industry-leading noise canceling headphones with up to 30 hours battery.",
+              "quantity": 3
+            },
+            {
+              "id": "52",
+              "name": "Apple AirPods Pro (2nd Gen)",
+              "slug": "apple-airpods-pro-2",
+              "brand": "Apple",
+              "category": "earbuds",
+              "mainCategory": "Luxury",
+              "price": 26990,
+              "currency": "INR",
+              "stock": 15,
+              "images": [
+                "https://tse1.mm.bing.net/th/id/OIP.134VJ44OStJo8DrF8-JnyAHaHa?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3"
+              ],
+              "description": "Advanced TWS earbuds with adaptive transparency, ANC, and personalized spatial audio.",
+              "quantity": 10
+            }
+          ],
+          "total": 400334.5,
+          "date": "2025-10-09T08:24:46.219Z"
+        },
+        {
+          "formData": {
+            "fullName": "YaduKrishnan p",
+            "address": "kdy",
+            "phone": "01234567899"
+          },
+          "items": [
+            {
+              "id": "2",
+              "name": "Boat Rockerz 550",
+              "slug": "boat-rockerz-550",
+              "brand": "boAt",
+              "category": "wireless",
+              "mainCategory": "Wireless",
+              "price": 1999,
+              "currency": "INR",
+              "isdeal": "true",
+              "stock": 50,
+              "images": [
+                "https://m.media-amazon.com/images/I/61gYxcIGjvL.SX522.jpg"
+              ],
+              "description": "Affordable wireless over-ear headphones with immersive sound.",
+              "quantity": 2
+            },
+            {
+              "id": "1",
+              "name": "Sony WH-1000XM5",
+              "slug": "sony-wh-1000xm5",
+              "brand": "Sony",
+              "category": "wireless",
+              "mainCategory": "Wireless",
+              "price": 29999,
+              "currency": "INR",
+              "isdeal": "true",
+              "stock": 15,
+              "images": [
+                "https://d1ncau8tqf99kp.cloudfront.net/converted/103364_original_local_1200x1050_v3_converted.webp"
+              ],
+              "description": "Industry-leading noise canceling headphones with up to 30 hours battery.",
+              "quantity": 3
+            },
+            {
+              "id": "52",
+              "name": "Apple AirPods Pro (2nd Gen)",
+              "slug": "apple-airpods-pro-2",
+              "brand": "Apple",
+              "category": "earbuds",
+              "mainCategory": "Luxury",
+              "price": 26990,
+              "currency": "INR",
+              "stock": 15,
+              "images": [
+                "https://tse1.mm.bing.net/th/id/OIP.134VJ44OStJo8DrF8-JnyAHaHa?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3"
+              ],
+              "description": "Advanced TWS earbuds with adaptive transparency, ANC, and personalized spatial audio.",
+              "quantity": 2
+            }
+          ],
+          "total": 162822.5,
+          "date": "2025-10-09T08:40:28.257Z"
+        },
+        {
+          "formData": {
+            "fullName": "YaduKrishnan p",
+            "address": "Pattanichalil house\nSahakarana mukku",
+            "phone": "01234567899"
+          },
+          "items": [
+            {
+              "id": "52",
+              "name": "Apple AirPods Pro (2nd Gen)",
+              "slug": "apple-airpods-pro-2",
+              "brand": "Apple",
+              "category": "earbuds",
+              "mainCategory": "Luxury",
+              "price": 26990,
+              "currency": "INR",
+              "stock": 15,
+              "images": [
+                "https://tse1.mm.bing.net/th/id/OIP.134VJ44OStJo8DrF8-JnyAHaHa?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3"
+              ],
+              "description": "Advanced TWS earbuds with adaptive transparency, ANC, and personalized spatial audio.",
+              "quantity": 1
+            }
+          ],
+          "total": 29739,
+          "date": "2025-10-10T06:12:57.332Z"
+        }
+      ],
+      "create": "2025-10-07T09:20:55.482Z",
+      "blocked": false,
+      "quantity": 1
+    }
+  ]
+}
