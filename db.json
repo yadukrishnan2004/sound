@@ -504,27 +504,9 @@
       "name": "yadhu",
       "email": "yadukrishnanp@gmail.com",
       "password": "12346",
-      "cart": [
-        {
-          "id": "2",
-          "name": "Boat Rockerz 550",
-          "slug": "boat-rockerz-550",
-          "brand": "boAt",
-          "category": "wireless",
-          "mainCategory": "Wireless",
-          "price": 1999,
-          "currency": "INR",
-          "isdeal": "true",
-          "stock": 50,
-          "images": [
-            "https://m.media-amazon.com/images/I/61gYxcIGjvL.SX522.jpg"
-          ],
-          "description": "Affordable wireless over-ear headphones with immersive sound.",
-          "quantity": 4
-        }
-      ],
+      "cart": [],
       "wishes": [
-        "52"
+        "2"
       ],
       "contact": [],
       "myorder": [
@@ -751,6 +733,68 @@
           ],
           "total": 29739,
           "date": "2025-10-10T06:12:57.332Z"
+        },
+        {
+          "formData": {
+            "fullName": "ytrfg",
+            "address": "utuyi",
+            "phone": "100"
+          },
+          "items": [
+            {
+              "id": "2",
+              "name": "Boat Rockerz 550",
+              "slug": "boat-rockerz-550",
+              "brand": "boAt",
+              "category": "wireless",
+              "mainCategory": "Wireless",
+              "price": 1999,
+              "currency": "INR",
+              "isdeal": "true",
+              "stock": 50,
+              "images": [
+                "https://m.media-amazon.com/images/I/61gYxcIGjvL.SX522.jpg"
+              ],
+              "description": "Affordable wireless over-ear headphones with immersive sound.",
+              "quantity": 7
+            },
+            {
+              "id": "1",
+              "name": "Sony WH-1000XM5",
+              "slug": "sony-wh-1000xm5",
+              "brand": "Sony",
+              "category": "wireless",
+              "mainCategory": "Wireless",
+              "price": 29999,
+              "currency": "INR",
+              "isdeal": true,
+              "stock": "10",
+              "images": [
+                "https://d1ncau8tqf99kp.cloudfront.net/converted/103364_original_local_1200x1050_v3_converted.webp"
+              ],
+              "description": "Industry-leading noise canceling headphones with up to 30 hours battery.",
+              "quantity": 1
+            },
+            {
+              "id": "3",
+              "name": "JBL Tune 760NC",
+              "slug": "jbl-tune-760nc",
+              "brand": "JBL",
+              "category": "wireless",
+              "mainCategory": "Wireless",
+              "price": 7499,
+              "currency": "INR",
+              "isdeal": "true",
+              "stock": 25,
+              "images": [
+                "https://m.media-amazon.com/images/I/71TvdUf4kyL.SX522.jpg"
+              ],
+              "description": "Lightweight, foldable headphones with active noise cancelling and deep bass.",
+              "quantity": 1
+            }
+          ],
+          "total": 56690.1,
+          "date": "2025-11-06T13:59:55.580Z"
         }
       ],
       "create": "2025-10-07T09:20:55.482Z",
