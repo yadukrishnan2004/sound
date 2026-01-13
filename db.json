@@ -492,7 +492,25 @@
       "email": "yadukrishnangta@gmail.com",
       "password": "123456",
       "contact": [],
-      "cart": [],
+      "cart": [
+        {
+          "id": "1",
+          "name": "Sony WH-1000XM5",
+          "slug": "sony-wh-1000xm5",
+          "brand": "Sony",
+          "category": "wireless",
+          "mainCategory": "Wireless",
+          "price": 29999,
+          "currency": "INR",
+          "isdeal": true,
+          "stock": "10",
+          "images": [
+            "https://d1ncau8tqf99kp.cloudfront.net/converted/103364_original_local_1200x1050_v3_converted.webp"
+          ],
+          "description": "Industry-leading noise canceling headphones with up to 30 hours battery.",
+          "quantity": 1
+        }
+      ],
       "wishes": [],
       "myorder": [],
       "role": "user",
@@ -505,9 +523,7 @@
       "email": "yadukrishnanp@gmail.com",
       "password": "12346",
       "cart": [],
-      "wishes": [
-        "2"
-      ],
+      "wishes": [],
       "contact": [],
       "myorder": [
         {
