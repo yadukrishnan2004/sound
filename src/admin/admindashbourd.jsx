@@ -1,13 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { ApiContext } from "../Components/context/ApiContext";
 import axios from "axios";
-
-
-
-
-
-
-
+import BASE_URL from '../config/baseUrl';
 
 // Simple bar chart component for visualization
 const MiniChart = ({ values, color }) => {
@@ -32,7 +26,7 @@ const DashboardStats = () => {
  useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await axios.get(`http://localhost:5001/user/`);
+        const res = await axios.get(`${BASE_URL}/user/`);
         setUser(res.data);
         setIsBlocked(res.data.blocked || false);
       } catch (err) {

@@ -3,17 +3,18 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ArrowLeft, Lock, Unlock } from "lucide-react";
 import { ApiContext } from "../Components/context/ApiContext";
+import BASE_URL from "../config/baseUrl";
 
 
 function EditUser() {
-    const {jbl}=useContext(ApiContext);
+  const { jbl } = useContext(ApiContext);
   const { id } = useParams();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isBlocked, setIsBlocked] = useState(false);
 
-    const wishlistIds = user?.wishes || [];
+  const wishlistIds = user?.wishes || [];
   const wishlist = jbl.filter((p) => wishlistIds.includes(String(p.id)));
 
 
@@ -21,8 +22,10 @@ function EditUser() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await axios.get(`http://localhost:5001/user/${id}`);
-        setUser(res.data);
+        const res = await axios.get(`${BASE_URL}/admin/users/${id}`, {
+          withCredentials: true,
+        });
+        setUser(res.data?.data || res.data);
         setIsBlocked(res.data.blocked || false);
       } catch (err) {
         console.error("Error fetching user:", err);
@@ -36,7 +39,9 @@ function EditUser() {
 
   const handleSave = async () => {
     try {
-      await axios.put(`http://localhost:5001/user/${id}`, user);
+      await axios.put(`${BASE_URL}/admin/users/${id}`, user, {
+        withCredentials: true,
+      });
       alert("✅ User details updated successfully!");
       navigate("/admin/userlist");
     } catch (error) {
@@ -48,8 +53,10 @@ function EditUser() {
   const toggleBlock = async () => {
     try {
       const updated = { ...user, blocked: !isBlocked };
-      await axios.patch(`http://localhost:5001/user/${id}`, {
+      await axios.patch(`${BASE_URL}/admin/users/${id}/block`, {
         blocked: !isBlocked,
+      }, {
+        withCredentials: true,
       });
       setIsBlocked(!isBlocked);
       setUser(updated);
@@ -91,9 +98,8 @@ function EditUser() {
           </h1>
           <button
             onClick={toggleBlock}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-white ${
-              isBlocked ? "bg-green-600 hover:bg-green-700" : "bg-red-600 hover:bg-red-700"
-            }`}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-white ${isBlocked ? "bg-green-600 hover:bg-green-700" : "bg-red-600 hover:bg-red-700"
+              }`}
           >
             {isBlocked ? <Unlock size={18} /> : <Lock size={18} />}
             {isBlocked ? "Unblock User" : "Block User"}

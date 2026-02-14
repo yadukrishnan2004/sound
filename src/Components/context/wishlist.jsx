@@ -1,44 +1,101 @@
 import axios from "axios";
-import {ApiContext } from "./ApiContext";
-import { createContext, useContext } from "react";
+import { createContext, useCallback, useMemo } from "react";
+import { useAuth } from "../../AuthContext/authcontext";
+import BASE_URL from "../../config/baseUrl";
 
-export const wish =createContext();
+export const WishlistContext = createContext();
+
 export function Wishlist({ children }) {
-  const { user, setRefresh } = useContext(ApiContext);
+  const { user, fetchUserProfile } = useAuth();
 
-  const handleAddWish = async (product) => {
-    const currentWishes = user?.wishes || [];
-    const updatedWishes = [...currentWishes, String(product.id)];
+  /* ======================
+        ADD TO WISHLIST
+     ====================== */
+  const handleAddWish = useCallback(
+    async (product) => {
+      if (!user) {
+        console.warn("User not logged in");
+        return;
+      }
+
+      // 🔥 support both id and ProductID
+      const productId = product?.id || product?.ProductID;
+
+      try {
+        await axios.post(
+          `${BASE_URL}/wishlist/${productId}`,
+          {},
+          { withCredentials: true }
+        );
+
+        await fetchUserProfile(); // refresh profile
+        console.log("✅ Added to wishlist");
+      } catch (err) {
+        console.error("❌ Add wishlist error:", err.response?.data);
+      }
+    },
+    [user, fetchUserProfile]
+  );
+
+  /* ======================
+        REMOVE FROM WISHLIST
+     ====================== */
+  const removeWish = useCallback(
+    async (product) => {
+      if (!user) {
+        console.warn("User not logged in");
+        return;
+      }
+
+      const productId = product?.id || product?.ProductID;
+
+      try {
+        await axios.delete(`${BASE_URL}/wishlist/${productId}`, {
+          withCredentials: true,
+        });
+
+        await fetchUserProfile();
+        console.log("✅ Removed from wishlist");
+      } catch (err) {
+        console.error("❌ Remove wishlist error:", err.response?.data);
+      }
+    },
+    [user, fetchUserProfile]
+  );
+
+  /* ======================
+        CLEAR WISHLIST
+     ====================== */
+  const clearWishlist = useCallback(async () => {
+    if (!user) return;
 
     try {
-      await axios.patch(`http://localhost:5001/user/${user.id}`, {
-        wishes: updatedWishes,
+      await axios.delete(`${BASE_URL}/wishlist`, {
+        withCredentials: true,
       });
-      setRefresh((prev) => !prev);
-    } catch (err) {
-      console.error("Error adding to wishlist", err);
-    }
-  };
 
-  const removeWish = async (product) => {
-    const currentWishes = user?.wishes || [];
-    const updatedWishes = currentWishes.filter((id) => id !== String(product.id));
-
-    try {
-      await axios.patch(`http://localhost:5001/user/${user.id}`, {
-        wishes: updatedWishes,
-      });
-      setRefresh((prev) => !prev);
+      await fetchUserProfile();
+      console.log("🧹 Wishlist cleared");
     } catch (err) {
-      console.error("Error removing from wishlist", err);
+      console.error("❌ Clear wishlist error:", err.response?.data);
     }
-  };
-  console.log('this is wish list ' ,user)
+  }, [user, fetchUserProfile]);
+
+  /* ======================
+        CONTEXT VALUE
+     ====================== */
+  const contextValue = useMemo(
+    () => ({
+      removeWish,
+      handleAddWish,
+      clearWishlist,
+    }),
+    [removeWish, handleAddWish, clearWishlist]
+  );
 
   return (
-    <wish.Provider value={{ removeWish, handleAddWish }}>
+    <WishlistContext.Provider value={contextValue}>
       {children}
-    </wish.Provider>
-  )
-  
+    </WishlistContext.Provider>
+  );
 }

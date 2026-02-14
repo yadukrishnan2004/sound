@@ -1,21 +1,22 @@
 import React, { useContext, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ShoppingCart, Heart, Bell, User, LogIn } from "lucide-react";
-import { ApiContext } from "../context/ApiContext";
+import { useAuth } from "../../AuthContext/authcontext";
 
-function Navbar({color}) {
-  const { user } = useContext(ApiContext);
+function Navbar({ color }) {
+  const { user } = useAuth(); // ✅ get from auth context
   const [menuOpen, setMenuOpen] = useState(false);
   const [scroll, setScroll] = useState(false);
 
-  const wishes = user?.wishes || [];
+  // 🔥 backend uses wishlist and cart arrays with capitalized fields
+  const wishlist = user?.wishlist || [];
   const cart = user?.cart || [];
-  const cartcount=[];
-  const cart1= cart.map(u=> u.quantity);
- const count= cart1.reduce((a,b)=>a+b,0)
- 
 
-  
+  // Calculate total cart quantity
+  const cartCount = cart.reduce((total, item) => total + (item.Quantity || 0), 0);
+
+
+
 
   // ✅ Scroll listener with cleanup
   useEffect(() => {
@@ -37,9 +38,8 @@ function Navbar({color}) {
 
   return (
     <nav
-      className={`fixed w-full z-50 transition-all duration-300  ${
-        scroll ? "bg-gray-900 shadow-lg py-2 text-white" : "bg-transparent py-4"
-      } text-${color}`}
+      className={`fixed w-full z-50 transition-all duration-300  ${scroll ? "bg-gray-900 shadow-lg py-2 text-white" : "bg-transparent py-4"
+        } text-${color}`}
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 justify-between items-center">
@@ -78,9 +78,9 @@ function Navbar({color}) {
           <div className="flex items-center space-x-4">
             <Link to="/wishlist" className="relative hover:text-indigo-400">
               <Heart className="w-6 h-6" />
-              {wishes.length > 0 && (
+              {wishlist.length > 0 && (
                 <span className="absolute -top-2 -right-2 bg-red-600 text-xs px-1 rounded-full">
-                  {wishes.length}
+                  {wishlist.length}
                 </span>
               )}
             </Link>
@@ -88,7 +88,7 @@ function Navbar({color}) {
               <ShoppingCart className="w-6 h-6" />
               {cart.length > 0 && (
                 <span className="absolute -top-2 -right-2 bg-red-600 text-xs px-1 rounded-full">
-                  {count}
+                  {cartCount}
                 </span>
               )}
             </Link>
@@ -96,28 +96,28 @@ function Navbar({color}) {
               <Bell className="w-6 h-6" />
             </button>
 
-           <div className="flex items-center space-x-2">
-      {user ? (
-        <Link
-          to="/accountdetails"
-          className="flex items-center space-x-2 bg-white/10 hover:bg-white/20 text-white px-3 py-1 rounded-lg transition-all"
-        >
-          <User className="w-6 h-6 text-indigo-400" />
-          <span className="font-medium">
-            {user.name ? user.name.split(" ")[0] : user.email?.split("@")[0]}
-          </span>
-        </Link>
-      ) : (
-        <Link
-          to="/login"
-          className="flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded-lg transition-all"
-        >
-          <LogIn className="w-5 h-5" />
-          <span>Login</span>
-        </Link>
-      )}
-    </div>
-          
+            <div className="flex items-center space-x-2">
+              {user ? (
+                <Link
+                  to="/accountdetails"
+                  className="flex items-center space-x-2 bg-white/10 hover:bg-white/20 text-white px-3 py-1 rounded-lg transition-all"
+                >
+                  <User className="w-6 h-6 text-indigo-400" />
+                  <span className="font-medium">
+                    {user.name ? user.name.split(" ")[0] : user.email?.split("@")[0]}
+                  </span>
+                </Link>
+              ) : (
+                <Link
+                  to="/login"
+                  className="flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded-lg transition-all"
+                >
+                  <LogIn className="w-5 h-5" />
+                  <span>Login</span>
+                </Link>
+              )}
+            </div>
+
 
             {/* Mobile Menu Toggle */}
             <button

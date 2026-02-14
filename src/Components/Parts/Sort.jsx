@@ -3,6 +3,8 @@ import ProductCard from "./ProductCard";
 
 function ProductFilter({ data }) {
   const products = useMemo(() => data || [], [data]);
+  console.log("product",products);
+  
 
   const [searchName, setSearchName] = useState("");
   const [selectedType, setSelectedType] = useState("");
@@ -10,38 +12,41 @@ function ProductFilter({ data }) {
   const [maxPrice, setMaxPrice] = useState("");
   const [filteredProducts, setFilteredProducts] = useState(products);
 
-  // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8; 
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  const itemsPerPage = 8;
 
+  // 🔥 FILTER LOGIC UPDATED
   useEffect(() => {
-    let filtered = products;
+    let filtered = [...products];
 
     if (searchName.trim()) {
       filtered = filtered.filter((p) =>
-        p.name.toLowerCase().includes(searchName.toLowerCase())
+        p.name?.toLowerCase().includes(searchName.toLowerCase())
       );
     }
 
     if (selectedType) {
       filtered = filtered.filter(
-        (p) => p.category.toLowerCase() === selectedType.toLowerCase()
+        (p) =>
+          (p.category || "")
+            .toLowerCase()
+            .includes(selectedType.toLowerCase())
       );
     }
 
     if (minPrice || maxPrice) {
-      const min = minPrice ? parseInt(minPrice) : 0;
-      const max = maxPrice ? parseInt(maxPrice) : Infinity;
+      const min = minPrice ? Number(minPrice) : 0;
+      const max = maxPrice ? Number(maxPrice) : Infinity;
+
       filtered = filtered.filter((p) => {
-        const price = parseInt(p.price);
+        const price = Number(p.price);
         return price >= min && price <= max;
       });
     }
 
     setFilteredProducts(filtered);
-    setCurrentPage(1); // reset to first page when filters change
-  }, [searchName, selectedType, minPrice, maxPrice, products]);
+    setCurrentPage(1);
+  }, [searchName, selectedType, minPrice, maxPrice, products.data]);
 
   const handleClearFilters = () => {
     setSearchName("");
@@ -50,9 +55,12 @@ function ProductFilter({ data }) {
     setMaxPrice("");
   };
 
-  // Pagination logic
+  // 🔥 PAGINATION
+  console.log("filter product",filteredProducts);
+  
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
+
   const currentProducts = filteredProducts.slice(
     startIndex,
     startIndex + itemsPerPage
@@ -61,7 +69,7 @@ function ProductFilter({ data }) {
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
-      window.scrollTo({ top: 0, behavior: "smooth" }); // smooth scroll up on page change
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
@@ -71,104 +79,107 @@ function ProductFilter({ data }) {
         🎧 Headset Shop
       </h1>
 
-      {/* Filters */}
+      {/* FILTERS */}
       <div className="max-w-4xl mx-auto mb-8 bg-white/20 backdrop-blur-md shadow-lg rounded-lg p-6">
-        <h2 className="text-xl font-semibold mb-4">Filters</h2>
+        <h2 className="text-xl font-semibold mb-4 text-white">Filters</h2>
+
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          {/* SEARCH */}
           <div>
-            <label className="block text-sm font-medium text-white mb-2">
+            <label className="block text-sm text-white mb-2">
               Search by Name
             </label>
             <input
               type="text"
-              placeholder="Enter headset name..."
               value={searchName}
               onChange={(e) => setSearchName(e.target.value)}
-              className="text-black w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
+              className="text-black w-full px-4 py-2 rounded-lg"
+              placeholder="Search..."
             />
           </div>
 
+          {/* CATEGORY */}
           <div>
-            <label className="block text-sm font-medium text-gray-100 mb-2">
-              Filter Type
+            <label className="block text-sm text-white mb-2">
+              Category
             </label>
             <select
               value={selectedType}
               onChange={(e) => setSelectedType(e.target.value)}
-              className="text-black w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
+              className="text-black w-full px-4 py-2 rounded-lg"
             >
-              <option value="">All Types</option>
-              <option value="wired">wired</option>
-              <option value="wireless">wireless</option>
+              <option value="">All</option>
+              <option value="wired">Wired</option>
+              <option value="wireless">Wireless</option>
+              <option value="earbuds">Earbuds</option>
+              <option value="neckband">Neckband</option>
+              <option value="gaming">Gaming</option>
+              <option value="studio">Studio</option>
+              <option value="luxury">Luxury</option>
+              <option value="fitness">Fitness</option>
             </select>
           </div>
 
+          {/* PRICE */}
           <div>
-            <label className="block text-sm font-medium text-gray-100 mb-2">
-              Filter by Price (₹)
+            <label className="block text-sm text-white mb-2">
+              Price (₹)
             </label>
-            <div className="flex space-x-2">
+
+            <div className="flex gap-2">
               <input
                 type="number"
-                placeholder="Min"
                 value={minPrice}
                 onChange={(e) => setMinPrice(e.target.value)}
-                className="text-black w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
+                placeholder="Min"
+                className="text-black w-1/2 px-4 py-2 rounded-lg"
               />
               <input
                 type="number"
-                placeholder="Max"
                 value={maxPrice}
                 onChange={(e) => setMaxPrice(e.target.value)}
-                className="text-black w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
+                placeholder="Max"
+                className="text-black w-1/2 px-4 py-2 rounded-lg"
               />
             </div>
           </div>
 
+          {/* CLEAR */}
           <div className="flex items-end">
             <button
               onClick={handleClearFilters}
-              className="w-full bg-gray-500 text-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors"
+              className="w-full bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-500"
             >
-              Clear Filters
+              Clear
             </button>
           </div>
         </div>
 
-        <div className="mt-4 text-sm text-gray-100">
+        <div className="mt-4 text-sm text-white/80">
           Showing {currentProducts.length} of {filteredProducts.length} products
         </div>
       </div>
 
-      {/* Product Grid */}
-      <div className="flex justify-center">
-        <div className="flex justify-center items-center">
-          <div className="max-w-screen-xl w-full px-4 py-10 grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {currentProducts.length !== 0 ? (
-              currentProducts.map((product) => (
-                <ProductCard key={product.id} data={product} />
-              ))
-            ) : (
-              <div className="flex w-full justify-center items-center">
-                <div className="absolute w-full text-center text-white/70 py-20">
-                  <p className="text-xl">No products found in this category.</p>
-                  <p className="mt-2 text-sm">
-                    Please check back later or explore other categories.
-                  </p>
-                </div>
-              </div>
-            )}
+      {/* PRODUCT GRID */}
+      <div className="max-w-screen-xl mx-auto grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        {currentProducts.length ? (
+          currentProducts.map((product) => (
+            <ProductCard key={product.id} data={product} />
+          ))
+        ) : (
+          <div className="col-span-full text-center text-white/70 py-20">
+            No products found.
           </div>
-        </div>
+        )}
       </div>
 
-      {/* Pagination Controls */}
+      {/* PAGINATION */}
       {totalPages > 1 && (
-        <div className="flex justify-center items-center mt-8 space-x-2">
+        <div className="flex justify-center mt-8 gap-2">
           <button
-            className="px-3 py-1 bg-gray-700 text-white rounded disabled:opacity-50 hover:bg-gray-600"
             disabled={currentPage === 1}
             onClick={() => handlePageChange(currentPage - 1)}
+            className="px-3 py-1 bg-gray-700 text-white rounded disabled:opacity-40"
           >
             Prev
           </button>
@@ -180,7 +191,7 @@ function ProductFilter({ data }) {
               className={`px-3 py-1 rounded ${
                 currentPage === i + 1
                   ? "bg-green-500 text-white"
-                  : "bg-gray-700 text-gray-200 hover:bg-gray-600"
+                  : "bg-gray-700 text-gray-200"
               }`}
             >
               {i + 1}
@@ -188,9 +199,9 @@ function ProductFilter({ data }) {
           ))}
 
           <button
-            className="px-3 py-1 bg-gray-700 text-white rounded disabled:opacity-50 hover:bg-gray-600"
             disabled={currentPage === totalPages}
             onClick={() => handlePageChange(currentPage + 1)}
+            className="px-3 py-1 bg-gray-700 text-white rounded disabled:opacity-40"
           >
             Next
           </button>

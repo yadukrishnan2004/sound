@@ -1,113 +1,97 @@
-import React, { createContext, useContext, useMemo, useState } from "react";
-import {ApiContext} from "./ApiContext";
+import React, { createContext, useCallback, useMemo } from "react";
+import { useAuth } from "../../AuthContext/authcontext";
 import axios from "axios";
+import BASE_URL from "../../config/baseUrl";
 
 export const CartContext = createContext();
 
 export const ContextProvider = ({ children }) => {
-  const { user, setRefresh, refresh } = useContext(ApiContext);
+  const { user, fetchUserProfile } = useAuth();
 
-  if (!user) return;
-
-
-
-
-  const handleremove = async (productId) => {
-
-      
-      const currentCart = user.cart || []
-
-    const updatedCart = currentCart.filter((c) => c.id !== productId);
-
-    try {
-      await axios.patch(`http://localhost:5001/user/${user.id}`, {
-        cart: updatedCart,
-      });
-      setRefresh(prev => !prev);
-
-    } catch (err) {
-      console.error("Error removing item from cart", err);
-    }
-
-  };
-
-  const updateQuantity = async (productId, newQty) => {
-    const updatedCart = (user.cart || []).map((item) =>
-      item.id === productId ? { ...item, quantity: newQty } : item
-    );
-
-    try {
-      await axios.patch(`http://localhost:5001/user/${user.id}`, {
-        cart: updatedCart,
-      });
-      setRefresh(prev=>!prev)
-
-    } catch (err) {
-      console.error("Error updating quantity", err);
-    }
-  };
-
-const clearCart = async (user) => {
-  try {
-    await axios.patch(`http://localhost:5001/user/${user.id}`, {
-      cart: [] 
-    });
-    setRefresh(prev=>!prev)
-    console.log("✅ Order placed and cart cleared!");
-  } catch (error) {
-    console.error("❌ Error placing order:", error);
-  }
-};
-
-
-  const handleAddCart = async (product) => {
-
-    
-    const currentCart = user.cart || []
-    const exist = currentCart.find((c) => c.id === product.id);
-
-    if (exist) {
-      const updatedCart = currentCart.map((c) =>
-        c.id === product.id ? { ...exist, quantity: exist.quantity + 1 } : c
-      );
+  const handleremove = useCallback(
+    async (productId) => {
+      if (!user) return;
 
       try {
-        await axios.patch(`http://localhost:5001/user/${user.id}`, {
-          cart: updatedCart,
-          quantity: 1
+        await axios.delete(`${BASE_URL}/cart/${productId}`, {
+          withCredentials: true,
         });
-        setRefresh(prev=>!prev)
-
+        await fetchUserProfile(); // Refresh user data
+        console.log("✅ Item removed from cart");
       } catch (err) {
-        console.error("Error updating cart", err);
+        console.error("❌ Error removing item from cart:", err);
       }
-    } else {
+    },
+    [user, fetchUserProfile]
+  );
 
-      const updatedCart = [...currentCart, { ...product, quantity: 1 }];
+  const updateQuantity = useCallback(
+    async (productId, newQty) => {
+      if (!user) return;
 
       try {
-        await axios.patch(`http://localhost:5001/user/${user.id}`, {
-          cart: updatedCart,
-        });
-         setRefresh(prev=>!prev)
-
-
+        await axios.put(
+          `${BASE_URL}/cart/${productId}`,
+          { quantity: newQty },
+          { withCredentials: true }
+        );
+        await fetchUserProfile(); // Refresh user data
+        console.log("✅ Quantity updated");
       } catch (err) {
-        console.error("Error adding to cart", err);
+        console.error("❌ Error updating quantity:", err);
       }
-    }
-  
-  };
+    },
+    [user, fetchUserProfile]
+  );
 
-const contextValue = useMemo(
-  () => ({
-    handleAddCart,
-    handleremove,
-    updateQuantity,
-    clearCart
-  }),
-  [user, refresh, setRefresh]
-);
+  const clearCart = useCallback(
+    async () => {
+      if (!user) return;
+
+      try {
+        await axios.delete(`${BASE_URL}/cart/clear`, {
+          withCredentials: true,
+        });
+        await fetchUserProfile(); // Refresh user data
+        console.log("✅ Cart cleared!");
+      } catch (error) {
+        console.error("❌ Error clearing cart:", error);
+      }
+    },
+    [user, fetchUserProfile]
+  );
+
+  const handleAddCart = useCallback(
+    async (product) => {
+      if (!user) return;
+
+      try {
+        await axios.post(
+          `${BASE_URL}/cart/add`,
+          {
+            product_id: product.id,
+            quantity: 1,
+          },
+          { withCredentials: true }
+        );
+        await fetchUserProfile(); // Refresh user data
+        console.log("✅ Product added to cart");
+      } catch (err) {
+        console.error("❌ Error adding to cart:", err);
+      }
+    },
+    [user, fetchUserProfile]
+  );
+
+  const contextValue = useMemo(
+    () => ({
+      handleAddCart,
+      handleremove,
+      updateQuantity,
+      clearCart,
+    }),
+    [handleAddCart, handleremove, updateQuantity, clearCart]
+  );
 
   return (
     <CartContext.Provider value={contextValue}>{children}</CartContext.Provider>

@@ -23,6 +23,7 @@
   import Homee from "./admin/home";
   import ProtuctedRoute from "./Components/protuctedRoute";
 import AdminRoute from "./Components/adminrout";
+import OtpVerify from "./AuthContext/verifyOtp";
 
 
   const Homepage = lazy(() => import("./Components/pages/Homepage"));
@@ -51,6 +52,7 @@ import AdminRoute from "./Components/adminrout";
                 <Routes>
                   <Route path="/" element={<Homepage />} />
                   <Route path="/register" element={<Registration />} />
+                  <Route path="/verify-otp" element={<OtpVerify />} />
                   <Route path="/login" element={<Loginpage />} />
                   <Route path="/jbl" element={<Jbl />} />
                   <Route path="/Product/:id" element={<ProductDetail />} />
@@ -64,7 +66,7 @@ import AdminRoute from "./Components/adminrout";
 
                   {/* protect routes */}
                   <Route path="/Cart" element={ <ProtuctedRoute><Cartdisply /></ProtuctedRoute> } />
-                  <Route path="/checkout" element= {<ProtuctedRoute><Diplaycheckout /></ProtuctedRoute>} />
+                  <Route path="/checkout" element= {<Diplaycheckout />} />
                   <Route path="/order" element={<ProtuctedRoute><MyOrders /></ProtuctedRoute>} />
                   <Route path="/accountdetails" element={<ProtuctedRoute><AccountDetails /></ProtuctedRoute>} />
                   <Route path="/contact" element={<ProtuctedRoute><Contact /></ProtuctedRoute>} />

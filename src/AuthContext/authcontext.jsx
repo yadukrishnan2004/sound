@@ -1,96 +1,89 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import BASE_URL from "../config/baseUrl";
 
-export const AuthContext = createContext();
+// 🔥 DO NOT export the raw context (causes Vite refresh issues)
+export const AuthContext = createContext(null);
 
-export const useAuth = () => useContext(AuthContext);
+// ✅ Stable hook export
+export function useAuth() {
+  return useContext(AuthContext);
+}
 
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")) || null);
+// ✅ Stable provider export
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(null);
   const [errore, setErrore] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem("user"));
-    const fetchUser = async () => {
-      try {
-        const res = await axios.get(`http://localhost:5001/user/${storedUser.id}`);
-        setUser(res.data);
-      } catch (err) {
-        console.error("Error fetching user:", err);
-      }
-    };
+    fetchUserProfile();
+  }, []);
 
-    if (storedUser?.id) {
-      fetchUser();
-    } else if (!["/login", "/register"].includes(window.location.pathname)) {
-      navigate("/login");
+  const fetchUserProfile = async () => {
+    try {
+      const res = await axios.get(`${BASE_URL}/users/profile`, {
+        withCredentials: true,
+      });
+
+      // backend response = {status, message, data}
+      setUser(res?.data?.data || null);
+    } catch (err) {
+      console.log("No active session");
+      setUser(null);
+    } finally {
+      setLoading(false);
     }
-  }, [navigate]);
+  };
 
   const login = async (email, password) => {
     setLoading(true);
     setErrore("");
 
     try {
-      const res = await axios.get(`http://localhost:5001/user?email=${email}`);
-      if (res.data.length === 0) {
-        setErrore("User not found");
-        setLoading(false);
-        return;
-      }
+      await axios.post(
+        `${BASE_URL}/users/login`,
+        { email, password },
+        { withCredentials: true }
+      );
 
-      const foundUser = res.data[0];
+      await fetchUserProfile();
 
-      if (foundUser.blocked === true) {
-        setErrore("You are blocked by the admin.");
-        setLoading(false);
-        return;
-      }
-
-      if (foundUser.password !== password) {
-        setErrore("Invalid password");
-        setLoading(false);
-        return;
-      }
-
-      const loginTime = new Date();
-      const userData = {
-        id: foundUser.id,
-        email: foundUser.email,
-        role: foundUser.role,
-        loginTime,
-      };
-
-      localStorage.setItem("user", JSON.stringify(userData));
-      setUser(userData);
       alert("Login successful!");
-
-      if (foundUser.role === "Admin") {
-        navigate("/admin");
-      } else {
-        navigate("/");
-      }
+      navigate("/");
     } catch (err) {
-      console.error("Error during login:", err);
-      setErrore("Something went wrong. Please try again.");
+      console.error("Login error:", err);
+      setErrore(err?.response?.data?.message || "Login failed");
     } finally {
       setLoading(false);
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem("user");
-    setUser(null);
-    alert("Logged out successfully!");
-    navigate("/login");
+  const logout = async () => {
+    try {
+      await axios.post(`${BASE_URL}/users/logout`, {}, { withCredentials: true });
+      setUser(null);
+      navigate("/login");
+      console.log("✅ Logged out successfully");
+    } catch (err) {
+      console.error("❌ Logout error:", err);
+      // Still clear local state even if API fails
+      setUser(null);
+      navigate("/login");
+    }
   };
 
-  return (
-    <AuthContext.Provider value={{ user, errore, login, logout, loading }}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
+  const value = {
+    user,
+    errore,
+    loading,
+    login,
+    logout,
+    fetchUserProfile, // optional but useful
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}

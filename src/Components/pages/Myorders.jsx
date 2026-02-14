@@ -1,19 +1,32 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { ApiContext } from "../context/ApiContext";
+import { useAuth } from "../../AuthContext/authcontext";
+import BASE_URL from "../../config/baseUrl";
 
 function MyOrders() {
-  const { user } = useContext(ApiContext);
+  const { user } = useAuth();
   const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (user?.id) {
-      axios
-        .get(`http://localhost:5001/user/${user.id}`)
-        .then((res) => setOrders(res.data.myorder || []))
-        .catch((err) => console.error("Error fetching orders:", err));
+    if (user) {
+      fetchOrders();
     }
   }, [user]);
+
+  const fetchOrders = async () => {
+    try {
+      // ✅ Use /api/v1/orders endpoint (gets current user's orders)
+      const res = await axios.get(`${BASE_URL}/orders`, {
+        withCredentials: true,
+      });
+      setOrders(res.data?.data || []);
+    } catch (err) {
+      console.error("Error fetching orders:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (!user) {
     return (

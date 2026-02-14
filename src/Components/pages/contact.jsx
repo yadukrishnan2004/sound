@@ -1,11 +1,12 @@
-import React, { useContext, useState } from "react";
-import { ApiContext } from "../context/ApiContext";
+import React, { useState } from "react";
+import { useAuth } from "../../AuthContext/authcontext";
 import axios from "axios";
 import Navbar from "../Parts/Navbar";
 import Footer from "../Parts/footer";
+import BASE_URL from "../../config/baseUrl";
 
 function Contact() {
-  const { user,setRefresh } = useContext(ApiContext);
+  const { user, fetchUserProfile } = useAuth();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -26,11 +27,12 @@ function Contact() {
 
       const updatedcontact = [...res, formData];
 
-      await axios.patch(`http://localhost:5001/user/${user.id}`, {
-        contact: updatedcontact,
-      });
+      // TODO: Update to proper backend contact endpoint when available
+      await axios.post(`${BASE_URL}/users/contact`, {
+        contact: formData,
+      }, { withCredentials: true });
 
-      setRefresh(prev=>!prev)
+      await fetchUserProfile();
       console.log("Contact saved successfully");
     } catch (err) {
       console.error("Error saving contact:", err);
@@ -104,7 +106,7 @@ function Contact() {
           </div>
         </div>
       </div>
-      <Footer/>
+      <Footer />
     </div>
   );
 }

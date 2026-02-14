@@ -1,13 +1,15 @@
 import Sort from "./Sort";
-import ProductCard from "./ProductCard";
+// import ProductCard from "./ProductCard";
 
 function ProductDisplay({ data }) {
   window.scrollTo({ top: 0, behavior: "smooth" });
+console.log("data",data);
 
   return (
     <div className="">
       <div className="w-full flex justify-center  ">
         <div className="flex justify-center w-[80%]">
+          
           <Sort  data={data}/>
         </div>
       </div>

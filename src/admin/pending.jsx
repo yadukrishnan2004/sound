@@ -1,14 +1,14 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import BASE_URL from '../config/baseUrl';
 
 function Pending({status}) {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const fetchOrder = async () => {
-    setLoading(true);
     try {
-      const res = await axios.get("http://localhost:5001/user");
+      const res = await axios.get(`${BASE_URL}/user`);
       setUsers(res.data);
     } catch {
       alert("Failed to fetch users");
@@ -40,7 +40,7 @@ function Pending({status}) {
 
       // Update JSON server
       const updatedUser = updatedUsers.find((u) => u.id === userId);
-      await axios.put(`http://localhost:5001/user/${userId}`, updatedUser);
+      await axios.put(`${BASE_URL}/user/${userId}`, updatedUser);
     } catch (err) {
       console.error("Failed to update status:", err);
     }

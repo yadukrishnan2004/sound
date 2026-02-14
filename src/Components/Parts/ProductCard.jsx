@@ -1,19 +1,23 @@
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { CartContext } from "../context/Cartcontext";
-import { wish } from "../context/wishlist";
-import { ApiContext } from "../context/ApiContext";
+import { WishlistContext } from "../context/wishlist";
+import { useAuth } from "../../AuthContext/authcontext";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 
 function ProductCard({ data }) {
   const { handleAddCart } = useContext(CartContext);
-  const { user } = useContext(ApiContext);
-  const { removeWish, handleAddWish } = useContext(wish);
+  const { user } = useAuth(); // ✅ get from auth context
+  const { removeWish, handleAddWish } = useContext(WishlistContext);
   const navigate = useNavigate();
 
-  const like = user?.wishes?.includes(String(data.id));
+  // 🔥 check if product is in wishlist using ProductID
+  const like = user?.wishlist?.some(
+    (item) => String(item.ProductID) === String(data.id)
+  );
 
-  async function toggle() {
+  async function toggle(e) {
+    e.stopPropagation();
     if (like) await removeWish(data);
     else await handleAddWish(data);
   }
@@ -24,33 +28,51 @@ function ProductCard({ data }) {
 
   return (
     <div
-      className="bg-white/10 backdrop-blur-lg border border-white/20 shadow-lg 
-                 hover:shadow-xl transition-all duration-300 rounded-2xl 
-                 flex flex-col items-center text-center p-5 w-full max-w-sm"
+      onClick={gotoDetail}
+      className="cursor-pointer bg-white/10 backdrop-blur-lg border border-white/20 shadow-lg 
+                 hover:shadow-xl hover:scale-[1.02] transition-all duration-300 
+                 rounded-2xl flex flex-col p-5 w-full max-w-sm"
     >
-      {/* Image Section */}
-      <div
-        className="w-full h-56 flex items-center justify-center bg-white/20 rounded-xl mb-4 overflow-hidden cursor-pointer"
-        onClick={gotoDetail}
-      >
+      {/* IMAGE */}
+      <div className="w-full h-56 flex items-center justify-center bg-white/20 rounded-xl mb-4 overflow-hidden">
         <img
-          src={data.images[0]}
-          alt={data.name}
-          className="max-h-48 object-contain hover:scale-105 transition-transform duration-300"
+          src={data?.images?.[0] || "/noimage.png"}
+          alt={data?.name}
+          className="max-h-48 object-contain"
         />
       </div>
 
-      {/* Product Info */}
-      <h3 className="text-xl font-bold text-white mb-2">{data.name}</h3>
-      <p className="text-white/70 text-sm mb-4">
-        {data.description?.substring(0, 50)}...
+      {/* BRAND + CATEGORY */}
+      <div className="flex justify-between items-center mb-1">
+        <span className="text-xs text-indigo-300 font-semibold">
+          {data.brand}
+        </span>
+
+        <span className="text-xs text-white/60 uppercase">
+          {data.mainCategory || data.category}
+        </span>
+      </div>
+
+      {/* NAME */}
+      <h3 className="text-lg font-bold text-white line-clamp-2 mb-1">
+        {data.name}
+      </h3>
+
+      {/* DESCRIPTION */}
+      <p className="text-white/70 text-sm line-clamp-2 mb-3">
+        {data.description}
       </p>
+
+      {/* PRICE */}
       <span className="text-2xl font-extrabold text-amber-400 mb-4">
-        ₹{data.price}
+        ₹{Number(data.price)}
       </span>
 
-      {/* Action Buttons */}
-      <div className="flex gap-4 w-full">
+      {/* ACTIONS */}
+      <div
+        className="flex gap-3 mt-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
         <button
           className="flex-1 bg-amber-500 text-black py-2 rounded-full font-semibold 
                      hover:bg-amber-600 transition"
@@ -62,7 +84,7 @@ function ProductCard({ data }) {
         <button
           className={`w-12 h-12 flex items-center justify-center border rounded-full transition 
             ${like ? "bg-red-500 border-red-500" : "border-white/30 hover:bg-white/10"}`}
-          aria-label={like ? "Remove from favorites" : "Add to favorites"}
+          aria-label="wishlist"
           onClick={toggle}
         >
           {like ? (

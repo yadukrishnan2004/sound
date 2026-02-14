@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Search } from "lucide-react";
 import axios from "axios";
+import BASE_URL from "../config/baseUrl";
 
 function ProductPage() {
   const [loading, setLoading] = useState(true);
@@ -20,8 +21,8 @@ function ProductPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get("http://localhost:5001/jbl");
-        setProducts(res.data);
+        const res = await axios.get(`${BASE_URL}/users/allproducts`);
+        setProducts(res.data?.data || []);
       } catch (error) {
         alert("Error fetching data from server");
       } finally {
@@ -35,7 +36,9 @@ function ProductPage() {
   const handleDelete = async (id) => {
     setLoading(true);
     try {
-      await axios.delete(`http://localhost:5001/jbl/${id}`);
+      await axios.delete(`${BASE_URL}/admin/products/${id}`, {
+        withCredentials: true,
+      });
       setProducts(products.filter((item) => item.id !== id));
       alert("✅ Product deleted successfully!");
     } catch (error) {
@@ -54,8 +57,9 @@ function ProductPage() {
     setLoading(true);
     try {
       const res = await axios.put(
-        `http://localhost:5001/jbl/${editing}`,
-        formData
+        `${BASE_URL}/admin/products/${editing}`,
+        formData,
+        { withCredentials: true }
       );
       setProducts(
         products.map((item) => (item.id === editing ? res.data : item))
@@ -85,7 +89,9 @@ function ProductPage() {
     };
 
     try {
-      const res = await axios.post("http://localhost:5001/jbl", newProduct);
+      const res = await axios.post(`${BASE_URL}/admin/products`, newProduct, {
+        withCredentials: true,
+      });
       setProducts([...products, res.data]);
       resetForm();
     } catch (error) {

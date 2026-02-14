@@ -1,113 +1,161 @@
-import React, { useContext } from "react";
-import { CartContext } from "../context/Cartcontext";
-import { ApiContext } from "../context/ApiContext";
+import React from "react";
+import { useAuth } from "../../AuthContext/authcontext";
 import Navbar from "../Parts/Navbar";
 import { useNavigate } from "react-router-dom";
 import Footer from "../Parts/footer";
+import axios from "axios";
+import BASE_URL from "../../config/baseUrl";
 
 function Cartdisply() {
-  const { handleremove, updateQuantity, clearCart } = useContext(CartContext);
-  const { user } = useContext(ApiContext);
+  const { user, fetchUserProfile } = useAuth();
   const navigate = useNavigate();
 
-  if (!user || !user.cart || user.cart.length === 0) {
+  // 🔥 backend cart array
+  const cart = user?.cart || [];
+
+  /* ======================
+        BACKEND ACTIONS
+     ====================== */
+
+  const handleremove = async (cartId) => {
+    try {
+      await axios.delete(`${BASE_URL}/cart/${cartId}`, {
+        withCredentials: true,
+      });
+
+      await fetchUserProfile();
+    } catch (err) {
+      console.log("REMOVE ERROR:", err.response?.data);
+    }
+  };
+
+  const updateQuantity = async (cartId, qty) => {
+    try {
+      await axios.put(
+        `${BASE_URL}/cart/${cartId}`,
+        { quantity: qty },
+        { withCredentials: true }
+      );
+
+      await fetchUserProfile();
+    } catch (err) {
+      console.log("UPDATE ERROR:", err.response?.data);
+    }
+  };
+
+  const clearCart = async () => {
+    try {
+      await axios.delete(`${BASE_URL}/cart/clear`, {
+        withCredentials: true,
+      });
+
+      await fetchUserProfile();
+    } catch (err) {
+      console.log("CLEAR ERROR:", err.response?.data);
+    }
+  };
+
+  /* ======================
+          EMPTY CART
+     ====================== */
+
+  if (!cart.length) {
     return (
       <>
-        <Navbar  color={"black"}/>
-      <div className="min-h-screen bg-gradient-to-br from-pink-100 via-purple-100 to-blue-100 flex items-center justify-center">
+        <Navbar color={"black"} />
+        <div className="min-h-screen bg-gradient-to-br from-pink-100 via-purple-100 to-blue-100 flex items-center justify-center">
+          <div>
+            <p className="text-xl text-gray-600">🛒 Your cart is empty...</p>
 
-        <div>
-
-        <p className="text-xl text-gray-600">🛒 Your cart is empty...</p>
-         <button
-              onClick={() => {
-                navigate("/allproducts");
-              }}
-              className="mt-6  w-50 bg-gradient-to-r from-purple-500 to-indigo-600 text-white py-2 rounded-lg hover:from-purple-600 hover:to-indigo-700 transition"
+            <button
+              onClick={() => navigate("/allproducts")}
+              className="mt-6 w-50 bg-gradient-to-r from-purple-500 to-indigo-600 text-white py-2 rounded-lg"
             >
-              Countinue Shopping
+              Continue Shopping
             </button>
+          </div>
         </div>
-
-      </div>
-      <Footer />
+        <Footer />
       </>
     );
   }
 
-  const subtotal = user.cart.reduce(
-    (acc, item) => acc + item.price * item.quantity,
+  /* ======================
+          CALCULATIONS
+     ====================== */
+
+  const subtotal = cart.reduce(
+    (acc, item) => acc + Number(item.Price) * item.Quantity,
     0
   );
+
   const shipping = subtotal > 0 ? 50 : 0;
   const tax = subtotal * 0.1;
   const total = subtotal + shipping + tax;
+
+  /* ======================
+          UI
+     ====================== */
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 text-white">
       <Navbar />
       <div className="h-16" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <h1 className="text-4xl font-bold text-center text-purple-800 mb-12">
+      <div className="max-w-7xl mx-auto px-4 py-12">
+        <h1 className="text-4xl font-bold text-center text-purple-400 mb-12">
           🛍️ Shopping Cart
         </h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Cart Items */}
+          {/* CART ITEMS */}
           <div className="lg:col-span-2 space-y-6">
-            {user.cart.map((product) => (
+            {cart.map((product) => (
               <div
-                key={product.id}
-                className="flex items-center justify-between bg-white rounded-xl shadow-md p-4 hover:shadow-lg transition"
+                key={`cart-${product.CartID}`}
+                className="flex justify-between bg-white rounded-xl shadow-md p-4"
               >
-                {/* Left section with image and details */}
                 <div
                   className="flex items-center space-x-4 cursor-pointer"
-                  onClick={() => navigate(`/Product/${product.id}`)}
+                  onClick={() => navigate(`/Product/${product.ProductID}`)}
                 >
                   <img
-                    src={product.images[0]}
-                    alt={product.name}
+                    src={product?.Images?.[0] || "/noimage.png"}
+                    alt={product.Name}
                     className="w-24 h-24 object-cover rounded-md border"
                   />
+
                   <div>
                     <h2 className="text-lg font-semibold text-gray-800">
-                      {product.name}
+                      {product.Name}
                     </h2>
-                    <p className="text-sm text-gray-500">₹{product.price}</p>
-                    <p
-                      className={`text-sm mt-1 ${
-                        product.inStock ? "text-green-600" : "text-yellow-600"
-                      }`}
-                    >
-                      {product.inStock ? "In stock" : "Ships in 3-4 weeks"}
+
+                    <p className="text-sm text-gray-500">
+                      ₹{Number(product.Price)}
                     </p>
                   </div>
                 </div>
 
-                {/* Right section with quantity and actions */}
                 <div className="flex items-center space-x-4">
                   <select
-                    className="border rounded px-2 py-1 text-black bg-gray-50"
-                    value={product.quantity}
+                    className="border rounded px-2 py-1 text-black"
+                    value={product.Quantity}
                     onChange={(e) =>
-                      updateQuantity(product.id, parseInt(e.target.value))
+                      updateQuantity(product.CartID, Number(e.target.value))
                     }
                   >
                     {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => (
-                      <option key={n} value={n}>
-                        {n}
-                      </option>
+                      <option key={n}>{n}</option>
                     ))}
                   </select>
 
                   <p className="text-lg font-medium text-gray-700">
-                    ₹{(product.price * product.quantity).toFixed(2)}
+                    ₹{(product.Price * product.Quantity).toFixed(2)}
                   </p>
+
                   <button
-                    className="text-red-500 hover:text-red-600 hover:underline"
-                    onClick={() => handleremove(product.id)}
+                    className="text-red-500 hover:underline"
+                    onClick={() => handleremove(product.ProductID)}
                   >
                     Remove
                   </button>
@@ -116,50 +164,49 @@ function Cartdisply() {
             ))}
           </div>
 
-          {/* Summary */}
-          <div className="bg-white p-6 rounded-xl shadow-lg">
-            <h2 className="text-2xl font-semibold text-purple-700 mb-6">
-              Order Summary
-            </h2>
-            <div className="space-y-3 text-sm text-gray-700">
+          {/* SUMMARY */}
+          <div className="bg-white p-6 rounded-xl shadow-lg text-gray-800">
+            <h2 className="text-2xl font-semibold mb-6">Order Summary</h2>
+
+            <div className="space-y-3 text-sm">
               <div className="flex justify-between">
                 <span>Subtotal</span>
                 <span>₹{subtotal.toFixed(2)}</span>
               </div>
+
               <div className="flex justify-between">
-                <span>Shipping estimate</span>
+                <span>Shipping</span>
                 <span>₹{shipping.toFixed(2)}</span>
               </div>
+
               <div className="flex justify-between">
-                <span>Tax estimate</span>
+                <span>Tax</span>
                 <span>₹{tax.toFixed(2)}</span>
               </div>
-              <div className="border-t pt-4 flex justify-between font-semibold text-base">
+
+              <div className="border-t pt-4 flex justify-between font-semibold">
                 <span>Total</span>
                 <span>₹{total.toFixed(2)}</span>
               </div>
             </div>
 
-            {/* Proceed to Checkout */}
             <button
-              onClick={() => {
-                navigate("/checkout");
-              }}
-              className="mt-6 w-full bg-gradient-to-r from-purple-500 to-indigo-600 text-white py-2 rounded-lg hover:from-purple-600 hover:to-indigo-700 transition"
+              onClick={() => navigate("/checkout")}
+              className="mt-6 w-full bg-gradient-to-r from-purple-500 to-indigo-600 text-white py-2 rounded-lg"
             >
               Proceed to Checkout
             </button>
 
-            {/* Clear Cart */}
             <button
-              onClick={() => clearCart(user)}
-              className="mt-3 w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition"
+              onClick={clearCart}
+              className="mt-3 w-full bg-red-500 text-white py-2 rounded-lg"
             >
               🧹 Clear Cart
             </button>
           </div>
         </div>
       </div>
+
       <Footer />
     </div>
   );

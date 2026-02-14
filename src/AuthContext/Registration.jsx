@@ -1,16 +1,13 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import BASE_URL from '../config/baseUrl';
 
 function Registration() {
   const [formdata, setFormdata] = useState({
     name: "",
     email: "",
-    password: "",
-    myorder: [],
-    cart: [],
-    wishes: [],
-    create: new Date(),
+    password: ""
   });
   const [error, setError] = useState({});
   const [valid, setValid] = useState(true);
@@ -42,10 +39,10 @@ function Registration() {
     if (isValid) {
       setLoading(true);
       axios
-        .post("http://localhost:5001/user", formdata)
+        .post(`${BASE_URL}/users/signup`, formdata)
         .then((res) => {
           localStorage.setItem("user", JSON.stringify(res.data));
-          navigate("/login");
+          navigate("/verify-otp");
         })
         .catch(() => {
           alert("Registration failed");
