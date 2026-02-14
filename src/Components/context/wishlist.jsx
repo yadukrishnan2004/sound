@@ -19,7 +19,7 @@ export function Wishlist({ children }) {
       }
 
       // 🔥 support both id and ProductID
-      const productId = product?.id || product?.ProductID;
+      const productId = product?.id || product?.product_id;
 
       try {
         await axios.post(
@@ -47,7 +47,9 @@ export function Wishlist({ children }) {
         return;
       }
 
-      const productId = product?.id || product?.ProductID;
+      console.log("productsss",product);
+      
+      const productId = product.product_id;
 
       try {
         await axios.delete(`${BASE_URL}/wishlist/${productId}`, {

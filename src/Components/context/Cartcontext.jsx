@@ -69,7 +69,7 @@ export const ContextProvider = ({ children }) => {
         await axios.post(
           `${BASE_URL}/cart/add`,
           {
-            product_id: product.id,
+            product_id: product.id||product.product_id,
             quantity: 1,
           },
           { withCredentials: true }

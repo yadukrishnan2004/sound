@@ -10,19 +10,17 @@ function Cartdisply() {
   const { user, fetchUserProfile } = useAuth();
   const navigate = useNavigate();
 
-  // 🔥 backend cart array
   const cart = user?.cart || [];
 
   /* ======================
         BACKEND ACTIONS
-     ====================== */
+  ====================== */
 
   const handleremove = async (cartId) => {
     try {
       await axios.delete(`${BASE_URL}/cart/${cartId}`, {
         withCredentials: true,
       });
-
       await fetchUserProfile();
     } catch (err) {
       console.log("REMOVE ERROR:", err.response?.data);
@@ -36,7 +34,6 @@ function Cartdisply() {
         { quantity: qty },
         { withCredentials: true }
       );
-
       await fetchUserProfile();
     } catch (err) {
       console.log("UPDATE ERROR:", err.response?.data);
@@ -48,7 +45,6 @@ function Cartdisply() {
       await axios.delete(`${BASE_URL}/cart/clear`, {
         withCredentials: true,
       });
-
       await fetchUserProfile();
     } catch (err) {
       console.log("CLEAR ERROR:", err.response?.data);
@@ -56,8 +52,8 @@ function Cartdisply() {
   };
 
   /* ======================
-          EMPTY CART
-     ====================== */
+        EMPTY CART
+  ====================== */
 
   if (!cart.length) {
     return (
@@ -81,8 +77,8 @@ function Cartdisply() {
   }
 
   /* ======================
-          CALCULATIONS
-     ====================== */
+        CALCULATIONS
+  ====================== */
 
   const subtotal = cart.reduce(
     (acc, item) => acc + Number(item.Price) * item.Quantity,
@@ -95,7 +91,7 @@ function Cartdisply() {
 
   /* ======================
           UI
-     ====================== */
+  ====================== */
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 text-white">
@@ -115,12 +111,15 @@ function Cartdisply() {
                 key={`cart-${product.CartID}`}
                 className="flex justify-between bg-white rounded-xl shadow-md p-4"
               >
+                {/* LEFT SIDE */}
                 <div
                   className="flex items-center space-x-4 cursor-pointer"
-                  onClick={() => navigate(`/Product/${product.ProductID}`)}
+                  onClick={() =>
+                    navigate(`/Product/${product.ProductID}`)
+                  }
                 >
                   <img
-                    src={product?.Images?.[0] || "/noimage.png"}
+                    src={product?.Image?.[0] || "/noimage.png"}
                     alt={product.Name}
                     className="w-24 h-24 object-cover rounded-md border"
                   />
@@ -136,6 +135,7 @@ function Cartdisply() {
                   </div>
                 </div>
 
+                {/* RIGHT SIDE */}
                 <div className="flex items-center space-x-4">
                   <select
                     className="border rounded px-2 py-1 text-black"
@@ -155,7 +155,7 @@ function Cartdisply() {
 
                   <button
                     className="text-red-500 hover:underline"
-                    onClick={() => handleremove(product.ProductID)}
+                    onClick={() => handleremove(product.CartID)}
                   >
                     Remove
                   </button>
