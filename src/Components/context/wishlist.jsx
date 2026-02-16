@@ -47,9 +47,15 @@ export function Wishlist({ children }) {
         return;
       }
 
-      console.log("productsss",product);
-      
-      const productId = product.product_id;
+      console.log("Removing product:", product);
+
+      // 🔥 support both id and product_id, same as handleAddWish
+      const productId = product?.id || product?.product_id;
+
+      if (!productId) {
+        console.error("❌ No product ID found");
+        return;
+      }
 
       try {
         await axios.delete(`${BASE_URL}/wishlist/${productId}`, {

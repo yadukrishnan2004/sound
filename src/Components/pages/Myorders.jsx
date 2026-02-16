@@ -1,28 +1,45 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../AuthContext/authcontext";
 import BASE_URL from "../../config/baseUrl";
 
 function MyOrders() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  console.log("oreders", orders);
 
   useEffect(() => {
     if (user) {
       fetchOrders();
+    } else {
+      setLoading(false);
     }
   }, [user]);
 
   const fetchOrders = async () => {
     try {
-      // ✅ Use /api/v1/orders endpoint (gets current user's orders)
+      setError(null);
+      console.log("🔍 Fetching orders from:", `${BASE_URL}/orders`);
+
       const res = await axios.get(`${BASE_URL}/orders`, {
         withCredentials: true,
       });
-      setOrders(res.data?.data || []);
+
+      console.log("✅ Orders response:", res.data);
+
+      // Extract orders from data.Items based on backend response
+      const ordersData = res.data?.data?.Items || [];
+      console.log("📦 Extracted orders:", ordersData);
+
+      setOrders(ordersData);
     } catch (err) {
-      console.error("Error fetching orders:", err);
+      console.error("❌ Error fetching orders:", err);
+      console.error("Error response:", err.response?.data);
+      setError(err.response?.data?.message || "Failed to load orders. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -38,86 +55,101 @@ function MyOrders() {
     );
   }
 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen text-white bg-black">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-emerald-400 mx-auto mb-4"></div>
+          <h2 className="text-xl font-semibold">Loading your orders...</h2>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800 text-white py-12 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="bg-red-500/20 border border-red-500 rounded-lg p-6 text-center">
+            <h2 className="text-2xl font-bold mb-2">⚠️ Error Loading Orders</h2>
+            <p className="text-gray-300">{error}</p>
+            <button
+              onClick={fetchOrders}
+              className="mt-4 px-6 py-2 bg-emerald-500 hover:bg-emerald-600 rounded-lg font-semibold transition"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800 text-white py-12 px-6">
       <div className="max-w-6xl mx-auto">
         <h1 className="text-4xl font-bold text-center mb-10">🛍️ My Orders</h1>
 
-        {orders.length === 0 ? (
+        {!orders || orders.length === 0 ? (
           <div className="text-center text-gray-400 text-lg mt-20">
-            You haven’t placed any orders yet.
+            <p className="mb-4">You haven't placed any orders yet.</p>
+            <a
+              href="/allproducts"
+              className="inline-block px-6 py-3 bg-emerald-500 hover:bg-emerald-600 rounded-lg font-semibold transition"
+            >
+              Start Shopping
+            </a>
           </div>
         ) : (
           <div className="space-y-10">
             {orders.map((order, index) => {
-              const orderId = new Date(order.date).toLocaleString();
+
+              const orderId = order?.ID;
+              const orderStatus = order?.status;
+              const orderTotal = order?.total || 0;
+              const orderQty = order?.Quantity || 0;
+
               return (
                 <div
-                  key={index}
-                  className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-lg p-6 hover:scale-[1.01] transition"
+                  key={orderId || index}
+                  className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-lg p-6"
                 >
-                  <div className="flex flex-wrap justify-between items-center mb-4 border-b border-gray-600 pb-3">
+                  <div className="flex justify-between items-center border-b border-gray-600 pb-3 mb-4">
                     <h2 className="text-2xl font-semibold text-white">
-                      Order ID:{" "}
-                      <span className="text-emerald-400 font-mono">
+                      Order ID:
+                      <span className="text-emerald-400 font-mono ml-2">
                         {orderId}
                       </span>
                     </h2>
-                    <p className="text-lg text-gray-300">
-                      Total:{" "}
-                      <span className="font-bold text-amber-400">
-                        ₹{order.total.toFixed(2)}
-                      </span>
-                    </p>
+
+                    <span className={`font-semibold ${orderStatus === "pending"
+                      ? "text-yellow-400"
+                      : "text-green-400"
+                      }`}>
+                      {orderStatus}
+                    </span>
                   </div>
 
-                  {/* Shipping Details */}
-                  <div className="mb-6 bg-gray-800/50 rounded-lg p-4">
-                    <h3 className="text-xl font-semibold mb-2 text-gray-100">
-                      📦 Shipping Details
-                    </h3>
-                    <p>
-                      <strong>Name:</strong> {order.formData.fullName}
-                    </p>
-                    <p>
-                      <strong>Address:</strong> {order.formData.address}
-                    </p>
-                    <p>
-                      <strong>Phone:</strong> {order.formData.phone}
-                    </p>
-                  </div>
+                  <p className="text-gray-300">
+                    Quantity: {orderQty}
+                  </p>
 
-                  {/* Items */}
-                  <div>
-                    <h3 className="text-xl font-semibold mb-3 text-gray-100">
-                      🧾 Items in this Order
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {order.items.map((item, idx) => (
-                        <div
-                          key={idx}
-                          className="bg-gray-900/40 rounded-lg p-4 flex flex-col items-center text-center border border-gray-700 hover:border-emerald-400 transition"
-                        >
-                          <img
-                            src={item.images[0]}
-                            alt={item.name}
-                            className="w-24 h-24 object-contain mb-3 rounded-lg"
-                          />
-                          <h4 className="text-lg font-semibold text-white">
-                            {item.name}
-                          </h4>
-                          <p className="text-gray-400 text-sm">{item.brand}</p>
-                          <p className="mt-2 text-amber-400 font-semibold">
-                            ₹{item.price.toFixed(2)} × {item.quantity}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                  <p className="text-lg text-amber-400 font-bold mt-2">
+                    Total: ₹{Number(orderTotal).toFixed(2)}
+                  </p>
+
+                  <button
+                    onClick={() => navigate(`/myorders/${orderId}`)}
+                    className="mt-4 w-full bg-emerald-500 hover:bg-emerald-600 text-white py-2 px-4 rounded-lg font-semibold transition"
+                  >
+                    View Details →
+                  </button>
+
                 </div>
               );
             })}
           </div>
+
         )}
       </div>
     </div>

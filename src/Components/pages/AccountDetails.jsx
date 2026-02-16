@@ -25,8 +25,8 @@ function AccountDetails() {
   const orders = user?.orders || [];
   const address = user?.address || [];
 
-  console.log("address",address);
-  
+  console.log("address", address);
+
 
   if (!user) {
     return (
@@ -80,7 +80,7 @@ function AccountDetails() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
 
             <div
-              onClick={() => navigate("/cart")}
+              onClick={() => navigate("/Cart")}
               className="cursor-pointer bg-blue-500/20 border border-blue-500/30 rounded-xl p-6 text-center hover:scale-105 transition"
             >
               <ShoppingCart className="mx-auto text-blue-400 mb-2" size={28} />
@@ -98,7 +98,7 @@ function AccountDetails() {
             </div>
 
             <div
-              onClick={() => navigate("/orders")}
+              onClick={() => navigate("/myorders")}
               className="cursor-pointer bg-green-500/20 border border-green-500/30 rounded-xl p-6 text-center hover:scale-105 transition"
             >
               <Package className="mx-auto text-green-400 mb-2" size={28} />

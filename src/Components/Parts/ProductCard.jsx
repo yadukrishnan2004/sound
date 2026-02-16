@@ -11,15 +11,27 @@ function ProductCard({ data }) {
   const { removeWish, handleAddWish } = useContext(WishlistContext);
   const navigate = useNavigate();
 
-  // 🔥 check if product is in wishlist using ProductID
+  // 🔥 check if product is in wishlist - support multiple property names
   const like = user?.wishlist?.some(
-    (item) => String(item.ProductID) === String(data.id)
+    (item) => {
+      const wishlistProductId = item?.product_id || item?.ProductID || item?.id;
+      const currentProductId = data?.id || data?.ID;
+      return String(wishlistProductId) === String(currentProductId);
+    }
   );
 
   async function toggle(e) {
     e.stopPropagation();
-    if (like) await removeWish(data);
-    else await handleAddWish(data);
+    console.log("🔄 ProductCard toggle. Current like state:", like);
+    console.log("📦 Product data:", data);
+
+    if (like) {
+      console.log("➖ Removing from wishlist...");
+      await removeWish(data);
+    } else {
+      console.log("➕ Adding to wishlist...");
+      await handleAddWish(data);
+    }
   }
 
   function gotoDetail() {
