@@ -17,9 +17,7 @@ const login = async (userData) => {
 };
 
 const logout = async () => {
-    // Ideally the backend should handle token invalidation
     await api.post('/users/logout');
-    localStorage.removeItem('token');
 };
 
 const getProfile = async () => {

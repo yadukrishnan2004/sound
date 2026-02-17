@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import api from "../../services/api";
+import toast from "react-hot-toast";
 
 function AddressModal({ onClose, onSuccess }) {
     const [form, setForm] = useState({
@@ -26,15 +27,16 @@ function AddressModal({ onClose, onSuccess }) {
 
             if (res.status === 200 || res.status === 201) {
                 if (onSuccess) await onSuccess();
+                toast.success("Address saved successfully");
                 onClose();
                 return;
             }
 
-            alert("Failed to save address");
+            toast.error("Failed to save address");
 
         } catch (err) {
             console.error("Address save failed:", err);
-            alert(
+            toast.error(
                 err?.response?.data?.message ||
                 err?.message ||
                 "Failed to save address"

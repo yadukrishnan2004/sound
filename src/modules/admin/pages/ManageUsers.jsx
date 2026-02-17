@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { ArrowLeft, Edit, Trash2, Lock, Unlock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import api from "../../../services/api";
 
 function ManageUsers() {
@@ -19,6 +20,7 @@ function ManageUsers() {
       setAllUsers(res.data);
     } catch (error) {
       console.error("Error fetching users", error);
+      toast.error("Failed to fetch users");
     } finally {
       setLoading(false);
     }
@@ -32,10 +34,10 @@ function ManageUsers() {
         const updated = allUsers.filter((u) => u.id !== id);
         setAllUsers(updated);
 
-        alert("✅ User deleted successfully!");
+        toast.success("User deleted successfully");
       } catch (error) {
         console.error("Error deleting user:", error);
-        alert("❌ Failed to delete user. Please try again.");
+        toast.error("Failed to delete user");
       }
     }
   };
@@ -56,10 +58,10 @@ function ManageUsers() {
         blocked: updatedBlockedStatus,
       });
 
-      alert(`User ${id} ${updatedBlockedStatus ? "blocked" : "unblocked"} successfully.`);
+      toast.success(`User ${updatedBlockedStatus ? "blocked" : "unblocked"} successfully`);
     } catch (error) {
       console.error("Error updating block status:", error);
-      alert("Error updating block status. Reverting changes.");
+      toast.error("Error updating block status. Reverting changes.");
       fetchUsers(); // Revert
     }
   };

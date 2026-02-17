@@ -113,7 +113,7 @@ function Loginpage() {
                 <p className="mt-6 text-center text-sm text-white/60">
                     Not a member?{" "}
                     <Link
-                        to="/register"
+                        to="/signup"
                         className="font-semibold text-indigo-400 hover:text-indigo-300"
                     >
                         Sign Up

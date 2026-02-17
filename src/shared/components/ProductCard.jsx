@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import toast from "react-hot-toast";
 import { addToCart } from "../../features/cart/cartSlice";
 import { addToWishlist, removeFromWishlist } from "../../features/wishlist/wishlistSlice";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
@@ -9,14 +10,12 @@ function ProductCard({ data }) {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
+
     const { user } = useSelector((state) => state.auth);
-    // Using simplified selector for now, assuming wishlistItems is populated
+
     const { wishlistItems } = useSelector((state) => state.wishlist);
 
-    // Fallback check if using user object directly or slice
-    // This logic needs to be robust. 
-    // If we are fully migrating, we should rely on the slice state. 
-    // But let's keep the user object check as fallback or primary if the slice isn't fully wired up with backend sync yet.
+
     const currentWishlist = wishlistItems.length > 0 ? wishlistItems : (user?.wishlist || []);
 
     const like = currentWishlist.some(
@@ -25,27 +24,30 @@ function ProductCard({ data }) {
             const currentProductId = data?.id || data?.ID;
             return String(wishlistProductId) === String(currentProductId);
         }
-    );
+    );    
 
     async function toggle(e) {
         e.stopPropagation();
         if (!user) {
-            alert("Please login first");
+            toast.error("Please login first");
             return;
         }
         if (like) {
             dispatch(removeFromWishlist(data));
+            toast.success("Removed from wishlist");
         } else {
-            dispatch(addToWishlist(data));
+            dispatch(addToWishlist(data.id));
+            toast.success("Added to wishlist");
         }
     }
 
     function handleAddCart(product) {
         if (!user) {
-            alert("Please login first");
+            toast.error("Please login first");
             return;
         }
         dispatch(addToCart(product));
+        toast.success("Added to cart");
     }
 
     function gotoDetail() {

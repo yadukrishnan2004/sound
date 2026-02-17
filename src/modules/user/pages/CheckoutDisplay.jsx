@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import api from "../../../services/api";
 import { clearCart } from "../../../features/cart/cartSlice";
 import { getUserProfile } from "../../../features/auth/authSlice";
@@ -61,16 +62,16 @@ function CheckoutDisplay() {
             setNewAddress({ street: "", city: "", zip: "" });
             setShowAddressForm(false);
             await fetchAddresses();
-            alert("✅ Address added successfully!");
+            toast.success("Address added successfully");
         } catch (err) {
             console.error("Error adding address:", err);
-            alert("❌ Failed to add address");
+            toast.error("Failed to add address");
         }
     };
 
     const handlePlaceOrder = async () => {
         if (!selectedAddress) {
-            alert("Please select or add a delivery address");
+            toast.error("Please select or add a delivery address");
             return;
         }
 
@@ -84,12 +85,12 @@ function CheckoutDisplay() {
             dispatch(clearCart());
             dispatch(getUserProfile());
 
-            alert(`✅ Order placed successfully!\n\nOrder ID: ${res.data?.data?.id || "N/A"}\nTotal: ₹${totalAmount.toFixed(2)}`);
+            toast.success(`Order placed successfully! Order ID: ${res.data?.data?.id || "N/A"}`);
             navigate("/myorders");
         } catch (error) {
-            console.error("❌ Error placing order:", error);
+            console.error("Error placing order:", error);
             const msg = error?.response?.data?.message || error.message || "Something went wrong!";
-            alert(msg);
+            toast.error(msg);
         }
     };
 

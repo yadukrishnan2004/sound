@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import api from "../../../services/api";
 
 function Pending({ status }) {
@@ -10,7 +11,7 @@ function Pending({ status }) {
             const res = await api.get('/user');
             setUsers(res.data);
         } catch {
-            alert("Failed to fetch users");
+            toast.error("Failed to fetch users");
         } finally {
             setLoading(false);
         }

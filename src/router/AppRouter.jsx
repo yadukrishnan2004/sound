@@ -36,7 +36,7 @@ function AppRouter() {
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={!user ? <Loginpage /> : <Navigate to="/" />} />
                 <Route path="/signup" element={!user ? <Registration /> : <Navigate to="/" />} />
-                <Route path="/otpverify" element={<OtpVerify />} />
+                <Route path="/verify-otp" element={<OtpVerify />} />
                 <Route path="/Product/:id" element={<ProductDetail />} />
                 <Route path="/allproducts" element={<AllProducts />} />
 

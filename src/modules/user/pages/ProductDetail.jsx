@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import toast from "react-hot-toast";
 import { getProduct, resetProduct } from "../../../features/products/productSlice";
 import { addToCart } from "../../../features/cart/cartSlice";
 import { addToWishlist, removeFromWishlist } from "../../../features/wishlist/wishlistSlice";
@@ -10,10 +11,8 @@ import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 function ProductDetail() {
     const { id } = useParams();
     const dispatch = useDispatch();
-
     const { product, isLoading, isError, message } = useSelector((state) => state.products);
     const { user } = useSelector((state) => state.auth);
-    // Using direct user.wishlist fallback until wishlistSlice is fully synced if needed
     const { wishlistItems } = useSelector((state) => state.wishlist);
 
     const [mainImage, setMainImage] = useState("");
@@ -67,22 +66,25 @@ function ProductDetail() {
 
     const toggleWishlist = () => {
         if (!user) {
-            alert("Please login to use wishlist");
+            toast.error("Please login to use wishlist");
             return;
         }
         if (like) {
             dispatch(removeFromWishlist(product));
+            toast.success("Removed from wishlist");
         } else {
-            dispatch(addToWishlist(product));
+            dispatch(addToWishlist(product.id));
+            toast.success("Added to wishlist");
         }
     };
 
     const handleAddToCart = () => {
         if (!user) {
-            alert("Please login to add to cart");
+            toast.error("Please login to add to cart");
             return;
         }
         dispatch(addToCart(product));
+        toast.success("Added to cart");
     };
 
 

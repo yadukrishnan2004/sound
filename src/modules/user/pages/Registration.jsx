@@ -51,6 +51,7 @@ function Registration() {
         if (isValid) {
             dispatch(register(formdata));
         }
+
     };
 
     return (

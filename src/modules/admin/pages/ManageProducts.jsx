@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Search } from "lucide-react";
+import toast from "react-hot-toast";
 import api from "../../../services/api";
 import { ENDPOINTS } from "../../../services/endpoints";
 
@@ -28,7 +29,7 @@ function ManageProducts() {
       const res = await api.get(ENDPOINTS.PRODUCTS.LIST);
       setProducts(res.data?.data || res.data || []);
     } catch (error) {
-      alert("Error fetching data from server");
+      toast.error("Error fetching data from server");
     } finally {
       setLoading(false);
     }
@@ -39,9 +40,9 @@ function ManageProducts() {
     try {
       await api.delete(`/admin/products/${id}`);
       setProducts(products.filter((item) => item.id !== id));
-      alert("✅ Product deleted successfully!");
+      toast.success("Product deleted successfully");
     } catch (error) {
-      alert("❌ Error deleting product");
+      toast.error("Error deleting product");
     } finally {
       setLoading(false);
     }
@@ -63,10 +64,10 @@ function ManageProducts() {
         products.map((item) => (item.id === editing ? res.data : item))
       );
 
-      alert("💾 Product updated successfully!");
+      toast.success("Product updated successfully");
     } catch (error) {
       console.error("Error saving product:", error);
-      alert("❌ Error saving product");
+      toast.error("Error saving product");
     } finally {
       setLoading(false);
       setEditing(null);
@@ -77,7 +78,7 @@ function ManageProducts() {
   // ✅ Add New Product
   const handleAdd = async () => {
     if (!formData.name || !formData.price)
-      return alert("Please fill all required fields");
+      return toast.error("Please fill all required fields");
 
     const newProduct = {
       ...formData,
@@ -90,8 +91,9 @@ function ManageProducts() {
       const res = await api.post(`/admin/products`, newProduct);
       setProducts([...products, res.data]);
       resetForm();
+      toast.success("Product added successfully");
     } catch (error) {
-      alert("❌ Error adding product");
+      toast.error("Error adding product");
     }
   };
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import toast from "react-hot-toast";
 import { verifyOtp, reset } from "../../../features/auth/authSlice";
 
 function OtpVerify() {
@@ -18,7 +19,7 @@ function OtpVerify() {
 
     useEffect(() => {
         if (isSuccess) {
-            alert("OTP verified successfully");
+            toast.success("OTP verified successfully");
             navigate("/login");
             dispatch(reset());
         }
@@ -35,7 +36,7 @@ function OtpVerify() {
         e.preventDefault();
 
         if (!formData.email || !formData.otp) {
-            alert("Email and OTP are required");
+            toast.error("Email and OTP are required");
             return;
         }
 
@@ -86,8 +87,8 @@ function OtpVerify() {
                         type="submit"
                         disabled={isLoading}
                         className={`w-full py-2 rounded-md font-semibold transition ${isLoading
-                                ? "bg-gray-500 cursor-not-allowed"
-                                : "bg-indigo-600 hover:bg-indigo-500 text-white"
+                            ? "bg-gray-500 cursor-not-allowed"
+                            : "bg-indigo-600 hover:bg-indigo-500 text-white"
                             }`}
                     >
                         {isLoading ? "Verifying..." : "Verify OTP"}

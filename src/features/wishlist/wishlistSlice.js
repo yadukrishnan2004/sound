@@ -15,7 +15,7 @@ export const addToWishlist = createAsyncThunk(
     'wishlist/add',
     async (product, thunkAPI) => {
         try {
-            const response = await api.post(ENDPOINTS.WISHLIST.ADD, product);
+            const response = await api.post(ENDPOINTS.WISHLIST.ADD(product) );
             thunkAPI.dispatch(getUserProfile());
             return response.data;
         } catch (error) {
@@ -34,10 +34,6 @@ export const removeFromWishlist = createAsyncThunk(
     'wishlist/remove',
     async (product, thunkAPI) => {
         try {
-            // Legacy code: await removeWish(product) -> axios.delete(..., { data: product }) maybe?
-            // Or assumes product has an ID and DELETE /wishlist/remove/:id?
-            // The endpoint is defined as /wishlist/remove/${id}.
-            // We need to know what ID to pass. Product ID?
             const id = product.id || product.ID || product.product_id;
             await api.delete(ENDPOINTS.WISHLIST.REMOVE(id));
             thunkAPI.dispatch(getUserProfile());

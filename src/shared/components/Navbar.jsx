@@ -6,6 +6,8 @@ import { useSelector, useDispatch } from "react-redux";
 
 function Navbar({ color }) {
     const { user } = useSelector((state) => state.auth);
+    console.log("user from nav bar",user);
+    
     // Assuming cart and wishlist are also in redux now, or still usage user object if that's how it's structured
     // For now, let's assume we might need to fetch them or they are part of user.
     // The original code: const wishlist = user?.wishlist || [];

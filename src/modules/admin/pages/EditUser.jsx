@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { ArrowLeft, Lock, Unlock } from "lucide-react";
+import toast from "react-hot-toast";
 import api from "../../../services/api";
 import { getProducts } from "../../../features/products/productSlice";
 
@@ -32,6 +33,7 @@ function EditUser() {
         setIsBlocked(res.data.blocked || false);
       } catch (err) {
         console.error("Error fetching user:", err);
+        toast.error("Failed to fetch user");
       } finally {
         setLoading(false);
       }
@@ -47,11 +49,11 @@ function EditUser() {
   const handleSave = async () => {
     try {
       await api.put(`/admin/users/${id}`, user);
-      alert("✅ User details updated successfully!");
+      toast.success("User details updated successfully");
       navigate("/admin/userlist");
     } catch (error) {
       console.error("Error saving user:", error);
-      alert("❌ Failed to save changes");
+      toast.error("Failed to save changes");
     }
   };
 
@@ -63,8 +65,10 @@ function EditUser() {
       });
       setIsBlocked(!isBlocked);
       setUser(updated);
+      toast.success(`User ${!isBlocked ? "blocked" : "unblocked"} successfully`);
     } catch (error) {
       console.error("Error toggling block:", error);
+      toast.error("Failed to update block status");
     }
   };
 
