@@ -19,6 +19,8 @@ export const ENDPOINTS = {
         GET: '/wishlist',
         ADD: (id) => `/wishlist/${id}`,
         REMOVE: (id) => `/wishlist/${id}`,
+        CLEAR:'/wishlist/clear',
+
     },
     ORDERS: {
         CREATE: '/orders',

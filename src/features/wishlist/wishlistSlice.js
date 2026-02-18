@@ -44,6 +44,18 @@ export const removeFromWishlist = createAsyncThunk(
     }
 );
 
+export const clearWishlist = createAsyncThunk(
+    'wishlist/clear',
+    async (_, thunkAPI) => {
+        try {
+            await api.delete(ENDPOINTS.WISHLIST.CLEAR);
+            thunkAPI.dispatch(getUserProfile());
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.toString());
+        }
+    }
+);
+
 export const wishlistSlice = createSlice({
     name: 'wishlist',
     initialState,
@@ -79,7 +91,20 @@ export const wishlistSlice = createSlice({
                 state.isSuccess = false;
                 state.isLoading = false;
                 state.message = '';
+            })
+            .addCase(clearWishlist.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(clearWishlist.fulfilled, (state) => {
+                state.isLoading = false;
+                state.isSuccess = true;
+            })
+            .addCase(clearWishlist.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
             });
+
     },
 });
 

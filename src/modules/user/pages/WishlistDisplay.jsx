@@ -2,11 +2,12 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { addToCart } from "../../../features/cart/cartSlice";
-import { removeFromWishlist } from "../../../features/wishlist/wishlistSlice";
+import { removeFromWishlist,clearWishlist } from "../../../features/wishlist/wishlistSlice";
 import Navbar from "../../../shared/components/Navbar";
 import Footer from "../../../shared/components/Footer";
 import NavbarSub from "../../../shared/components/NavbarSub";
 import { useNavigate } from "react-router";
+
 
 function WishlistDisplay() {
     const dispatch = useDispatch();
@@ -28,12 +29,15 @@ function WishlistDisplay() {
         toast.success("Added to cart");
     };
 
-    const handleClear = () => {
-        dispatch()
-        if (window.confirm("Are you sure you want to clear your entire wishlist?")) {
-            toast.error("Clear wishlist not yet implemented in backend or logic.");
-        }
-    };
+const handleClear = async () => {
+    if (!window.confirm("Are you sure you want to clear your entire wishlist?")) return;
+
+    dispatch(clearWishlist())
+        .unwrap()
+        .then(() => toast.success("Wishlist cleared"))
+        .catch(() => toast.error("Failed to clear wishlist"));
+};
+
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 text-white">
