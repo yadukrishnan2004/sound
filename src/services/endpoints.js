@@ -19,16 +19,21 @@ export const ENDPOINTS = {
         GET: '/wishlist',
         ADD: (id) => `/wishlist/${id}`,
         REMOVE: (id) => `/wishlist/${id}`,
-        CLEAR:'/wishlist/clear',
+        CLEAR: '/wishlist/clear',
 
     },
     ORDERS: {
         CREATE: '/orders',
         LIST: '/orders',
         DETAIL: (id) => `/orders/${id}`,
+        BUY: '/orders/buy-now'
     },
     ADDRESS: {
         CREATE: '/addresses',
         GET: '/addresses',
     },
+    SEARCH: {
+        SEARCH: '/users/search'
+    }
+
 };
