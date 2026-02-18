@@ -46,6 +46,7 @@ function ProductCard({ data }) {
             toast.error("Please login first");
             return;
         }
+        
         dispatch(addToCart(product));
         toast.success("Added to cart");
     }

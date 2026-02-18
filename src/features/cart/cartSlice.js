@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../services/api';
 import { ENDPOINTS } from '../../services/endpoints';
-import { getUserProfile } from '../auth/authSlice';
+import { getUserProfile, logout } from '../auth/authSlice';
 
 const initialState = {
     cartItems: [],
@@ -16,12 +16,10 @@ export const addToCart = createAsyncThunk(
     'cart/add',
     async (product, thunkAPI) => {
         try {
-            // Logic from legacy: pass product data? 
-            // Usually only ID and quantity needed. 
-            // Assuming backend implementation:
-            // axios.post(`${BASE_URL}/cart/add`, product)
-            const response = await api.post(ENDPOINTS.CART.ADD, product);
-
+            const response = await api.post(ENDPOINTS.CART.ADD, {
+                "product_id": product.id,
+                "quantity": 1
+            });
             // Refresh user profile to update cart state
             thunkAPI.dispatch(getUserProfile());
 
@@ -41,9 +39,11 @@ export const addToCart = createAsyncThunk(
 // Update Quantity
 export const updateCartQuantity = createAsyncThunk(
     'cart/update',
-    async ({ cartId, quantity }, thunkAPI) => {
+    async ({ cartId, productId, quantity }, thunkAPI) => {
         try {
-            await api.put(ENDPOINTS.CART.UPDATE(cartId), { quantity });
+            console.log("cart quantity update", quantity);
+
+            await api.put(ENDPOINTS.CART.UPDATE(productId), { quantity });
             thunkAPI.dispatch(getUserProfile());
             return { cartId, quantity };
         } catch (error) {
@@ -100,6 +100,18 @@ export const cartSlice = createSlice({
                 const user = action.payload.data || action.payload;
                 state.cartItems = user.cart || [];
             })
+            .addCase(updateCartQuantity.fulfilled, (state, action) => {
+                const { cartId, quantity } = action.payload;
+
+                const item = state.cartItems.find(
+                    (i) => i.CartID === cartId
+                );
+
+                if (item) {
+                    item.Quantity = quantity;
+                }
+            })
+
             .addCase(addToCart.pending, (state) => {
                 state.isLoading = true;
             })
@@ -111,8 +123,15 @@ export const cartSlice = createSlice({
                 state.isLoading = false;
                 state.isError = true;
                 state.message = action.payload;
+            })
+            // Add other cases as needed
+            .addCase(logout.fulfilled, (state) => {
+                state.cartItems = [];
+                state.isError = false;
+                state.isSuccess = false;
+                state.isLoading = false;
+                state.message = '';
             });
-        // Add other cases as needed
     },
 });
 

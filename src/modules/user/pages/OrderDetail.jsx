@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import api from "../../../services/api";
 import Navbar from "../../../shared/components/Navbar";
+import { ENDPOINTS } from "../../../services/endpoints";
 
 function OrderDetail() {
     const { orderId } = useParams();
@@ -23,7 +24,7 @@ function OrderDetail() {
         try {
             setError(null);
             setLoading(true);
-            const res = await api.get(`/users/${orderId}/orders`);
+            const res = await api.get(ENDPOINTS.ORDERS.LIST);
             setOrderDetails(res.data?.data || []);
         } catch (err) {
             console.error("❌ Error fetching order details:", err);

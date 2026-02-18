@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getProducts } from "../../../features/products/productSlice";
 import myVideo from "../../../assets/bg-video.mp4";
-// import Navbar from "../../../shared/components/Navbar";
+import Navbar from "../../../shared/components/Navbar";
 import Footer from "../../../shared/components/Footer";
 // import NavbarSub from "../../../shared/components/NavbarSub";
 
@@ -89,6 +89,10 @@ function Home() {
           I'll stick to the Step 105 version which seems to be the "Inner Home".
           Use `HomePage` for the composition.
       */}
+
+              <div className="hidden md:flex sticky top-[64px] z-50 justify-center font-semibold">
+            <Navbar />
+        </div>
 
             {/* Background Video */}
             <video

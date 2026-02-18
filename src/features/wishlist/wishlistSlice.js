@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../services/api';
 import { ENDPOINTS } from '../../services/endpoints';
-import { getUserProfile } from '../auth/authSlice';
+import { getUserProfile, logout } from '../auth/authSlice';
 
 const initialState = {
     wishlistItems: [],
@@ -15,7 +15,7 @@ export const addToWishlist = createAsyncThunk(
     'wishlist/add',
     async (product, thunkAPI) => {
         try {
-            const response = await api.post(ENDPOINTS.WISHLIST.ADD(product) );
+            const response = await api.post(ENDPOINTS.WISHLIST.ADD(product));
             thunkAPI.dispatch(getUserProfile());
             return response.data;
         } catch (error) {
@@ -72,6 +72,13 @@ export const wishlistSlice = createSlice({
                 state.isLoading = false;
                 state.isError = true;
                 state.message = action.payload;
+            })
+            .addCase(logout.fulfilled, (state) => {
+                state.wishlistItems = [];
+                state.isError = false;
+                state.isSuccess = false;
+                state.isLoading = false;
+                state.message = '';
             });
     },
 });

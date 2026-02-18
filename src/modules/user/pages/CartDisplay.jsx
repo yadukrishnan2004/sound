@@ -19,8 +19,8 @@ function CartDisplay() {
         dispatch(removeFromCart(cartId));
     };
 
-    const handleUpdateQuantity = (cartId, qty) => {
-        dispatch(updateCartQuantity({ cartId, quantity: qty }));
+    const handleUpdateQuantity = (cartId, productId, qty) => {
+        dispatch(updateCartQuantity({ cartId, productId, quantity: qty }));
     };
 
     const handleClearCart = () => {
@@ -87,6 +87,8 @@ function CartDisplay() {
                                 key={`cart-${product.CartID}`}
                                 className="flex justify-between bg-white rounded-xl shadow-md p-4"
                             >
+                                {console.log("product from cart", product)
+                                }
                                 {/* LEFT SIDE */}
                                 <div
                                     className="flex items-center space-x-4 cursor-pointer"
@@ -117,7 +119,7 @@ function CartDisplay() {
                                         className="border rounded px-2 py-1 text-black"
                                         value={product.Quantity}
                                         onChange={(e) =>
-                                            handleUpdateQuantity(product.CartID, Number(e.target.value))
+                                            handleUpdateQuantity(product.CartID, product.ProductID, Number(e.target.value))
                                         }
                                     >
                                         {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => (

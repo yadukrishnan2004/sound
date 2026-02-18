@@ -25,4 +25,8 @@ export const ENDPOINTS = {
         LIST: '/orders',
         DETAIL: (id) => `/orders/${id}`,
     },
+    ADDRESS: {
+        CREATE: '/addresses',
+        GET: '/addresses',
+    },
 };

@@ -103,7 +103,7 @@ function Navbar({ color }) {
                         <div className="flex items-center space-x-2">
                             {user ? (
                                 <Link
-                                    to="/accountdetails"
+                                    to="/account"
                                     className="flex items-center space-x-2 bg-white/10 hover:bg-white/20 text-white px-3 py-1 rounded-lg transition-all"
                                 >
                                     <User className="w-6 h-6 text-indigo-400" />
