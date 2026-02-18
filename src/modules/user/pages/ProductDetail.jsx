@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { getProduct, resetProduct } from "../../../features/products/productSlice";
@@ -10,6 +10,7 @@ import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 
 function ProductDetail() {
     const { id } = useParams();
+    const navigate = useNavigate();
     const dispatch = useDispatch();
     const { product, isLoading, isError, message } = useSelector((state) => state.products);
     const { user } = useSelector((state) => state.auth);
@@ -87,6 +88,15 @@ function ProductDetail() {
         toast.success("Added to cart");
     };
 
+    const handleBuyNow = () => {
+        if (!user) {
+            toast.error("Please login to buy");
+            api.post
+            return;
+        }
+        navigate("/checkout", { state: { product: product, quantity: 1 } });
+    };
+
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black text-white">
@@ -146,6 +156,12 @@ function ProductDetail() {
 
                         {/* BUTTONS */}
                         <div className="flex gap-4 mt-6">
+                            <button
+                                onClick={handleBuyNow}
+                                className="bg-green-500 hover:bg-green-600 px-6 py-3 rounded-xl text-black font-semibold transition"
+                            >
+                                ⚡ Buy Now
+                            </button>
                             <button
                                 onClick={handleAddToCart}
                                 className="bg-amber-500 hover:bg-amber-600 px-6 py-3 rounded-xl text-black font-semibold transition"

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
 import api from "../../../services/api";
 import { clearCart } from "../../../features/cart/cartSlice";
@@ -9,13 +9,18 @@ import { ENDPOINTS } from "../../../services/endpoints";
 
 function CheckoutDisplay() {
     const navigate = useNavigate();
+    const location = useLocation();
     const dispatch = useDispatch();
 
     const { user } = useSelector((state) => state.auth);
     const { cartItems } = useSelector((state) => state.cart);
 
-    const currentCart =
-        cartItems.length > 0 ? cartItems : user?.cart || [];
+    const buyNowProduct = location.state?.product;
+    const buyNowQuantity = location.state?.quantity || 1;
+
+    const currentCart = buyNowProduct
+        ? [{ ...buyNowProduct, Quantity: buyNowQuantity }]
+        : (cartItems.length > 0 ? cartItems : user?.cart || []);
 
     const [addresses, setAddresses] = useState([]);
     const [selectedAddress, setSelectedAddress] = useState(null);
@@ -41,7 +46,7 @@ function CheckoutDisplay() {
         (acc, item) =>
             acc +
             Number(item.Price || item.price) *
-                (item.Quantity || item.quantity),
+            (item.Quantity || item.quantity),
         0
     );
 
@@ -113,17 +118,26 @@ function CheckoutDisplay() {
         }
 
         try {
-            const res = await api.post("/orders", {
-                address_id: selectedAddress,
-                payment_method: paymentMethod,
-            });
+            let res;
+            if (buyNowProduct) {
+                res = await api.post(ENDPOINTS.ORDERS.BUY, {
+                    product_id: buyNowProduct.id,
+                    quantity: 1, // Default quantity for now
+                    address_id: selectedAddress,
+                    payment_method: paymentMethod,
+                });
+            } else {
+                res = await api.post("/orders", {
+                    address_id: selectedAddress,
+                    payment_method: paymentMethod,
+                });
+                dispatch(clearCart());
+            }
 
-            dispatch(clearCart());
             dispatch(getUserProfile());
 
             toast.success(
-                `Order placed! Order ID: ${
-                    res.data?.data?.id || "N/A"
+                `Order placed! Order ID: ${res.data?.data?.id || "N/A"
                 }`
             );
 

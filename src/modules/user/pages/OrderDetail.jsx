@@ -24,7 +24,7 @@ function OrderDetail() {
         try {
             setError(null);
             setLoading(true);
-            const res = await api.get(ENDPOINTS.ORDERS.LIST);
+            const res = await api.get(`/orders/${orderId}`);
             setOrderDetails(res.data?.data || []);
         } catch (err) {
             console.error("❌ Error fetching order details:", err);

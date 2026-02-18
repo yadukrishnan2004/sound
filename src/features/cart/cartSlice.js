@@ -41,7 +41,7 @@ export const updateCartQuantity = createAsyncThunk(
     'cart/update',
     async ({ cartId, productId, quantity }, thunkAPI) => {
         try {
-            console.log("cart quantity update", quantity);
+
 
             await api.put(ENDPOINTS.CART.UPDATE(productId), { quantity });
             thunkAPI.dispatch(getUserProfile());

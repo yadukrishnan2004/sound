@@ -87,8 +87,6 @@ function CartDisplay() {
                                 key={`cart-${product.CartID}`}
                                 className="flex justify-between bg-white rounded-xl shadow-md p-4"
                             >
-                                {console.log("product from cart", product)
-                                }
                                 {/* LEFT SIDE */}
                                 <div
                                     className="flex items-center space-x-4 cursor-pointer"
