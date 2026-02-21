@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import api from "../../../services/api";
+import { ENDPOINTS } from "../../../services/endpoints";
 
 function MyOrders() {
     const navigate = useNavigate();
@@ -21,7 +22,7 @@ function MyOrders() {
     const fetchOrders = async () => {
         try {
             setError(null);
-            const res = await api.get('/orders');
+            const res = await api.get(ENDPOINTS.ORDERS.LIST);
             const ordersData = res.data?.data?.Items || [];
             setOrders(ordersData);
         } catch (err) {

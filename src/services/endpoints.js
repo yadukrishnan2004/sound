@@ -3,6 +3,8 @@ export const ENDPOINTS = {
         LOGIN: '/users/login',
         REGISTER: '/users/signup',
         VERIFY_OTP: '/users/verify',
+        PROFILE: '/users/profile',
+        LOGOUT: '/users/logout'
     },
     PRODUCTS: {
         LIST: '/users/allproducts',
@@ -38,8 +40,21 @@ export const ENDPOINTS = {
     ADMIN: {
         USERS: '/admin/users',
         ORDERS: '/admin/orders',
+        UPDATE_ORDER: (id) => `/admin/orders/${id}`,
+        UPDATE_ORDER_STATUS: (id) => `/admin/orders/status/${id}`,
         DASHBOARD_GRAPHS: '/admin/dashboard-graphs',
-        DELETE_USER : (id) => `/admin/users/${id}`,
-        BLOCK_USER: (id)=> `/admin/users/${id}/block`,
+        DELETE_USER: (id) => `/admin/users/${id}`,
+        BLOCK_USER: (id) => `/admin/users/${id}/block`,
+        GET_USER: (id) => `/admin/users/${id}`,
+        GET_USER_CART: (id) => `/admin/users/${id}/cart`,
+        GET_USER_WISHLIST: (id) => `/admin/users/${id}/wishlist`,
+        GET_USER_ADDRESSES: (id) => `/admin/users/${id}/addresses`,
+        UPDATE_USER: (id) => `/admin/users/${id}`,
+        PRODUCTS: {
+            LIST: '/admin/products',
+            ADD: '/admin/products',
+            UPDATE: (id) => `/admin/products/${id}`,
+            DELETE: (id) => `/admin/products/${id}`,
+        }
     }
 };

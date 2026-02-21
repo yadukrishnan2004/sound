@@ -56,7 +56,7 @@ function ManageUsers() {
 
   // ── Block / Unblock — PATCH via adminSlice (NOT GET, NOT navigate) ────────
   const handleToggleBlock = (user) => {
-    dispatch(toggleBlockUser({ id: user.id, blocked: !user.blocked }));
+    dispatch(toggleBlockUser({ id: user.id, blocked: !user.is_blocked }));
   };
 
   // ── Edit user ─────────────────────────────────────────────────────────────
@@ -125,13 +125,12 @@ function ManageUsers() {
                     {/* Status */}
                     <td className="px-4 py-3 text-center">
                       <span
-                        className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                          user.blocked
+                        className={`px-3 py-1 rounded-full text-xs font-semibold ${user.is_blocked
                             ? "bg-red-100 text-red-700"
                             : "bg-green-100 text-green-700"
-                        }`}
+                          }`}
                       >
-                        {user.blocked ? "Blocked" : "Active"}
+                        {user.is_blocked ? "Blocked" : "Active"}
                       </span>
                     </td>
 
@@ -162,14 +161,13 @@ function ManageUsers() {
                         <button
                           onClick={() => handleToggleBlock(user)}
                           disabled={loadingBlock}
-                          className={`p-2 rounded-full transition disabled:opacity-40 ${
-                            user.blocked
+                          className={`p-2 rounded-full transition disabled:opacity-40 ${user.is_blocked
                               ? "text-green-600 hover:bg-green-100"
                               : "text-gray-600 hover:bg-gray-100"
-                          }`}
-                          title={user.blocked ? "Unblock User" : "Block User"}
+                            }`}
+                          title={user.is_blocked ? "Unblock User" : "Block User"}
                         >
-                          {user.blocked ? (
+                          {user.is_blocked ? (
                             <Unlock size={18} />
                           ) : (
                             <Lock size={18} />

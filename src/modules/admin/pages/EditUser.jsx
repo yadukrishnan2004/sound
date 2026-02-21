@@ -5,6 +5,7 @@ import { ArrowLeft, Lock, Unlock } from "lucide-react";
 import toast from "react-hot-toast";
 import api from "../../../services/api";
 import { getProducts } from "../../../features/products/productSlice";
+import { ENDPOINTS } from "../../../services/endpoints";
 
 function EditUser() {
   const { id } = useParams();
@@ -28,9 +29,9 @@ function EditUser() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await api.get(`/admin/users/${id}`);
+        const res = await api.get(ENDPOINTS.ADMIN.GET_USER(id));
         setUser(res.data?.data || res.data);
-        setIsBlocked(res.data.blocked || false);
+        setIsBlocked(res.data.is_blocked || false);
       } catch (err) {
         console.error("Error fetching user:", err);
         toast.error("Failed to fetch user");
@@ -48,7 +49,7 @@ function EditUser() {
 
   const handleSave = async () => {
     try {
-      await api.put(`/admin/users/${id}`, user);
+      await api.put(ENDPOINTS.ADMIN.UPDATE_USER(id), user);
       toast.success("User details updated successfully");
       navigate("/admin/userlist");
     } catch (error) {
@@ -59,8 +60,8 @@ function EditUser() {
 
   const toggleBlock = async () => {
     try {
-      const updated = { ...user, blocked: !isBlocked };
-      await api.patch(`/admin/users/${id}/block`, {
+      const updated = { ...user, is_blocked: !isBlocked };
+      await api.patch(ENDPOINTS.ADMIN.BLOCK_USER(id), {
         blocked: !isBlocked,
       });
       setIsBlocked(!isBlocked);

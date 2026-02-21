@@ -127,7 +127,7 @@ function CheckoutDisplay() {
                     payment_method: paymentMethod,
                 });
             } else {
-                res = await api.post("/orders", {
+                res = await api.post(ENDPOINTS.ORDERS.CREATE, {
                     address_id: selectedAddress,
                     payment_method: paymentMethod,
                 });

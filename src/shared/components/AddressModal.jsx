@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import api from "../../services/api";
 import toast from "react-hot-toast";
+import { ENDPOINTS } from "../../services/endpoints";
 
 function AddressModal({ onClose, onSuccess }) {
     const [form, setForm] = useState({
@@ -23,7 +24,7 @@ function AddressModal({ onClose, onSuccess }) {
         try {
             setLoading(true);
 
-            const res = await api.post('/addresses', form);
+            const res = await api.post(ENDPOINTS.ADDRESS.CREATE, form);
 
             if (res.status === 200 || res.status === 201) {
                 if (onSuccess) await onSuccess();

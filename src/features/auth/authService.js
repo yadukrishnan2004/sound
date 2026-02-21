@@ -17,11 +17,11 @@ const login = async (userData) => {
 };
 
 const logout = async () => {
-    await api.post('/users/logout');
+    await api.post(ENDPOINTS.AUTH.LOGOUT);
 };
 
 const getProfile = async () => {
-    const response = await api.get('/users/profile');
+    const response = await api.get(ENDPOINTS.AUTH.PROFILE);
     return response.data;
 }
 

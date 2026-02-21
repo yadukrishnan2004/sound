@@ -191,11 +191,11 @@ const adminSlice = createSlice({
 
                 // Update inside the users list
                 const idx = state.users.findIndex((u) => u.id === id);
-                if (idx !== -1) state.users[idx].blocked = blocked;
+                if (idx !== -1) state.users[idx].is_blocked = blocked;
 
                 // Update selectedUser if it is the same person
                 if (state.selectedUser?.id === id) {
-                    state.selectedUser.blocked = blocked;
+                    state.selectedUser.is_blocked = blocked;
                 }
 
                 state.successMessage = blocked ? 'User blocked' : 'User unblocked';

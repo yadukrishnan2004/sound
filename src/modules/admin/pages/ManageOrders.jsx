@@ -1,89 +1,65 @@
 import React, { useState } from "react";
 import Pending from "./pending";
 
+// ✅ These MUST match exactly what your backend stores/returns
+const STATUSES = ["Pending", "Shipped", "Delivered", "Cancelled"];
+
+const STATUS_CONFIG = {
+  Pending: {
+    label: "⏳ Pending Orders",
+    bg: "bg-gray-50",
+    border: "border-gray-200",
+    heading: "text-gray-800",
+    activeBtn: "bg-gray-600 text-white shadow-md scale-105",
+    hoverBtn: "bg-white text-gray-700 hover:bg-gray-100 hover:shadow",
+  },
+  Shipped: {
+    label: "📦 Shipped",
+    bg: "bg-yellow-50",
+    border: "border-yellow-200",
+    heading: "text-yellow-800",
+    activeBtn: "bg-yellow-600 text-white shadow-md scale-105",
+    hoverBtn: "bg-white text-gray-700 hover:bg-yellow-50 hover:shadow",
+  },
+  Delivered: {
+    label: "✅ Delivered",
+    bg: "bg-green-50",
+    border: "border-green-200",
+    heading: "text-green-800",
+    activeBtn: "bg-green-600 text-white shadow-md scale-105",
+    hoverBtn: "bg-white text-gray-700 hover:bg-green-50 hover:shadow",
+  },
+  Cancelled: {
+    label: "❌ Cancelled",
+    bg: "bg-red-50",
+    border: "border-red-200",
+    heading: "text-red-800",
+    activeBtn: "bg-red-600 text-white shadow-md scale-105",
+    hoverBtn: "bg-white text-gray-700 hover:bg-red-50 hover:shadow",
+  },
+};
+
 export default function ManageOrders() {
   const [active, setActive] = useState("Pending");
 
-  const statuses = ["Pending", "On the Way", "Shipped", "Delivered"];
-
-  const renderContent = () => {
-    switch (active) {
-      case "Pending":
-        return (
-          <div className="p-6 bg-gray-50 border border-gray-200 rounded-2xl shadow-sm">
-            <h3 className="text-xl font-semibold text-gray-800 mb-2">
-              ⏳ Pending Orders
-            </h3>
-            <p className="text-gray-600">
-              <Pending status={"Pending"} />
-            </p>
-          </div>
-        );
-
-      case "On the Way":
-        return (
-          <div className="p-6 bg-blue-50 border border-blue-200 rounded-2xl shadow-sm">
-            <h3 className="text-xl font-semibold text-blue-800 mb-2">
-              🚚 On the Way
-            </h3>
-            <p className="text-blue-700">
-              <Pending status={"On the Way"} />
-            </p>
-          </div>
-        );
-
-      case "Shipped":
-        return (
-          <div className="p-6 bg-yellow-50 border border-yellow-200 rounded-2xl shadow-sm">
-            <h3 className="text-xl font-semibold text-yellow-800 mb-2">
-              📦 Shipped
-            </h3>
-            <p className="text-yellow-700">
-              <Pending status={"Shipped"} />
-            </p>
-          </div>
-        );
-
-      case "Delivered":
-        return (
-          <div className="p-6 bg-green-50 border border-green-200 rounded-2xl shadow-sm">
-            <h3 className="text-xl font-semibold text-green-800 mb-2">
-              ✅ Delivered
-            </h3>
-            <p className="text-green-700">
-              <Pending status={"Delivered"} />
-            </p>
-          </div>
-        );
-
-      default:
-        return null;
-    }
-  };
+  const config = STATUS_CONFIG[active];
 
   return (
     <div className="flex flex-col items-center p-10 bg-gray-50 min-h-screen">
-      <h2 className="text-2xl font-bold mb-6 text-gray-800">Order Status</h2>
+      <h2 className="text-2xl font-bold mb-6 text-gray-800">📋 Order Management</h2>
 
+      {/* Tab Buttons */}
       <div className="flex flex-wrap justify-center gap-4 mb-10">
-        {statuses.map((status) => {
+        {STATUSES.map((status) => {
           const isActive = active === status;
-          const colors = {
-            Pending: "gray",
-            "On the Way": "blue",
-            Shipped: "yellow",
-            Delivered: "green",
-          };
-
+          const cfg = STATUS_CONFIG[status];
           return (
             <button
               key={status}
               onClick={() => setActive(status)}
-              className={`px-6 py-3 rounded-full font-semibold transition-all duration-300 shadow-sm border
-                ${isActive
-                  ? `bg-${colors[status]}-600 text-white scale-105 shadow-md`
-                  : `bg-white text-gray-700 border-gray-300 hover:bg-${colors[status]}-100 hover:shadow`
-                }`}
+              className={`px-6 py-3 rounded-full font-semibold transition-all duration-300 shadow-sm border border-gray-300 ${
+                isActive ? cfg.activeBtn : cfg.hoverBtn
+              }`}
             >
               {status}
             </button>
@@ -91,8 +67,15 @@ export default function ManageOrders() {
         })}
       </div>
 
-      <div className="w-full  transition-all duration-300">
-        {renderContent()}
+      {/* Content Panel */}
+      <div className="w-full transition-all duration-300">
+        <div className={`p-6 ${config.bg} border ${config.border} rounded-2xl shadow-sm`}>
+          <h3 className={`text-xl font-semibold mb-2 ${config.heading}`}>
+            {config.label}
+          </h3>
+          {/* Key forces re-mount when tab changes, triggering fresh fetch */}
+          <Pending key={active} status={active} />
+        </div>
       </div>
     </div>
   );
