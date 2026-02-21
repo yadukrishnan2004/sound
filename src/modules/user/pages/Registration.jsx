@@ -20,11 +20,11 @@ function Registration() {
 
     useEffect(() => {
         if (isSuccess) {
-            navigate("/verify-otp");
             dispatch(reset());
+            navigate("/verify-otp");
         }
         if (isError) {
-            // stay on page to show error
+            console.log("faile to verify");
         }
     }, [isSuccess, isError, navigate, dispatch]);
 

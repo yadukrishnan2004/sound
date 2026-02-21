@@ -1,36 +1,51 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import DashboardStats from '../components/DashboardStats';
-// Assuming we move graphs or reuse them. 
-// For now, let's comment them out or import if I move them.
-// import Graph from '../components/Graph';
-// import Graph2 from '../components/Graph2';
-// import Graph3 from '../components/Graph3';
+import SalesChart from '../components/SalesChart';
+import OrderStatusChart from '../components/OrderStatusChart';
+import api from '../../../services/api';
+import { ENDPOINTS } from '../../../services/endpoints';
 
 function Dashboard() {
-    return (
-        <div>
-            <div className="h-full w-full overflow-hidden rounded-xl">
-                <DashboardStats />
-            </div>
+  const [graphData, setGraphData] = useState({ sales: [], orders: [] });
+  const [loading, setLoading] = useState(true);
 
-            {/* Graphs Section - Temporarily commented out until migrated
-        <div className="flex flex-col md:flex-row gap-6 mt-6">
-          <div className="md:w-1/2 h-[300px]">
-            <Graph />
-          </div>
-          <div className="md:w-1/2 h-[300px]">
-            <Graph2 />
-          </div>
-        </div>
+  useEffect(() => {
+    const fetchGraphs = async () => {
+      try {
+        const response = await api.get(ENDPOINTS.ADMIN.DASHBOARD_GRAPHS);
+        if (response.data && response.data.data) {
+          setGraphData(response.data.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch dashboard graphs:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-        <div className="w-full mt-6 h-[300px]">
-          <div className="md:w-1/2">
-            <Graph3 />
+    fetchGraphs();
+  }, []);
+
+  return (
+    <div className="p-6">
+      <div className="h-full w-full overflow-hidden rounded-xl mb-6">
+        <DashboardStats />
+      </div>
+
+      {loading ? (
+        <div className="text-white text-center">Loading charts...</div>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="h-[400px]">
+            <SalesChart data={graphData.sales || []} />
+          </div>
+          <div className="h-[400px]">
+            <OrderStatusChart data={graphData.orders || []} />
           </div>
         </div>
-        */}
-        </div>
-    )
+      )}
+    </div>
+  );
 }
 
 export default Dashboard;

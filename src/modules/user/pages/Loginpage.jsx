@@ -20,8 +20,13 @@ function Loginpage() {
             // Handle error display if needed beyond the message
         }
         if (isSuccess || user) {
-            navigate("/");
+            if (user.role == "admin") {
+                navigate("/admin")
+            } else {
+                navigate("/")
+            }
         }
+
         dispatch(reset());
     }, [user, isError, isSuccess, message, navigate, dispatch]);
 
@@ -38,6 +43,13 @@ function Loginpage() {
         }
 
         dispatch(login({ email: formdata.email, password: formdata.password }));
+        if (isSuccess || user) {
+            if (user.role == "admin") {
+                navigate("/admin")
+            } else {
+                navigate("/")
+            }
+        }
     };
 
     return (

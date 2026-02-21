@@ -1,92 +1,88 @@
-import React, { useState, useEffect } from "react";
+// src/modules/admin/pages/ManageUsers.jsx
+
+import React, { useEffect } from "react";
 import { ArrowLeft, Edit, Trash2, Lock, Unlock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
-import api from "../../../services/api";
+import {
+  fetchAdminUsers,
+  deleteAdminUser,
+  toggleBlockUser,
+  clearAdminError,
+  clearAdminSuccess,
+} from "../../../features/admin/adminslice";
 
 function ManageUsers() {
   const navigate = useNavigate();
-  const [allUsers, setAllUsers] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
 
+  const {
+    users,
+    loadingUsers,
+    loadingDelete,
+    loadingBlock,
+    error,
+    successMessage,
+  } = useSelector((state) => state.admin);
+
+  // ── Fetch all users on mount ───────────────────────────────────────────────
   useEffect(() => {
-    fetchUsers();
-  }, []);
+    dispatch(fetchAdminUsers());
+  }, [dispatch]);
 
-  const fetchUsers = async () => {
-    try {
-      setLoading(true);
-      const res = await api.get('/user/');
-      setAllUsers(res.data);
-    } catch (error) {
-      console.error("Error fetching users", error);
-      toast.error("Failed to fetch users");
-    } finally {
-      setLoading(false);
+  // ── Show success toast from Redux state ───────────────────────────────────
+  useEffect(() => {
+    if (successMessage) {
+      toast.success(successMessage);
+      dispatch(clearAdminSuccess());
     }
-  };
+  }, [successMessage, dispatch]);
 
-  const handleDelete = async (id) => {
+  // ── Show error toast from Redux state ─────────────────────────────────────
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+      dispatch(clearAdminError());
+    }
+  }, [error, dispatch]);
+
+  // ── Delete user ───────────────────────────────────────────────────────────
+  const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this user?")) {
-      try {
-        await api.delete(`/admin/users/${id}`);
-
-        const updated = allUsers.filter((u) => u.id !== id);
-        setAllUsers(updated);
-
-        toast.success("User deleted successfully");
-      } catch (error) {
-        console.error("Error deleting user:", error);
-        toast.error("Failed to delete user");
-      }
+      dispatch(deleteAdminUser(id));
     }
   };
 
-
-  const handleToggleBlock = async (id) => {
-    try {
-      const userToUpdate = allUsers.find((u) => u.id === id);
-      const updatedBlockedStatus = !userToUpdate.blocked;
-
-      // Optimistic update
-      const updated = allUsers.map((u) =>
-        u.id === id ? { ...u, blocked: updatedBlockedStatus } : u
-      );
-      setAllUsers(updated);
-
-      await api.patch(`/admin/users/${id}/block`, {
-        blocked: updatedBlockedStatus,
-      });
-
-      toast.success(`User ${updatedBlockedStatus ? "blocked" : "unblocked"} successfully`);
-    } catch (error) {
-      console.error("Error updating block status:", error);
-      toast.error("Error updating block status. Reverting changes.");
-      fetchUsers(); // Revert
-    }
+  // ── Block / Unblock — PATCH via adminSlice (NOT GET, NOT navigate) ────────
+  const handleToggleBlock = (user) => {
+    dispatch(toggleBlockUser({ id: user.id, blocked: !user.blocked }));
   };
 
+  // ── Edit user ─────────────────────────────────────────────────────────────
   const handleEdit = (id) => {
-    navigate(`/admin/edituser/${id}`)
+    navigate(`/admin/edituser/${id}`);
   };
 
+  // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-gray-100 py-10 px-6">
-
       <div className="max-w-6xl mx-auto bg-white rounded-2xl shadow-lg p-6">
+
         <button
           onClick={() => navigate(-1)}
           className="flex items-center gap-2 text-gray-700 hover:text-blue-600 mb-6"
         >
           <ArrowLeft size={18} /> Back
         </button>
+
         <h1 className="text-2xl font-bold text-gray-800 mb-6 text-center">
           👥 Manage Users
         </h1>
 
-        {loading ? (
+        {loadingUsers ? (
           <p className="text-center text-gray-500">Loading users...</p>
-        ) : allUsers.length === 0 ? (
+        ) : users.length === 0 ? (
           <p className="text-center text-gray-500">No users found.</p>
         ) : (
           <div className="overflow-x-auto">
@@ -101,7 +97,7 @@ function ManageUsers() {
                 </tr>
               </thead>
               <tbody>
-                {allUsers.map((user) => (
+                {users?.map((user) => (
                   <tr
                     key={user.id}
                     className="border-b hover:bg-gray-50 transition"
@@ -129,43 +125,58 @@ function ManageUsers() {
                     {/* Status */}
                     <td className="px-4 py-3 text-center">
                       <span
-                        className={`px-3 py-1 rounded-full text-xs font-semibold ${user.blocked
-                          ? "bg-red-100 text-red-700"
-                          : "bg-green-100 text-green-700"
-                          }`}
+                        className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                          user.blocked
+                            ? "bg-red-100 text-red-700"
+                            : "bg-green-100 text-green-700"
+                        }`}
                       >
                         {user.blocked ? "Blocked" : "Active"}
                       </span>
                     </td>
 
                     {/* Actions */}
-                    <td className="px-4 py-3 flex items-center justify-center gap-3">
-                      <button
-                        onClick={() => handleEdit(user.id)}
-                        className="p-2 text-blue-600 hover:bg-blue-100 rounded-full"
-                        title="Edit User"
-                      >
-                        <Edit size={18} />
-                      </button>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center justify-center gap-3">
 
-                      <button
-                        onClick={() => handleDelete(user.id)}
-                        className="p-2 text-red-600 hover:bg-red-100 rounded-full"
-                        title="Delete User"
-                      >
-                        <Trash2 size={18} />
-                      </button>
+                        {/* Edit */}
+                        <button
+                          onClick={() => handleEdit(user.id)}
+                          className="p-2 text-blue-600 hover:bg-blue-100 rounded-full transition"
+                          title="Edit User"
+                        >
+                          <Edit size={18} />
+                        </button>
 
-                      <button
-                        onClick={() => handleToggleBlock(user.id)}
-                        className={`p-2 rounded-full ${user.blocked
-                          ? "text-green-600 hover:bg-green-100"
-                          : "text-gray-600 hover:bg-gray-100"
+                        {/* Delete */}
+                        <button
+                          onClick={() => handleDelete(user.id)}
+                          disabled={loadingDelete}
+                          className="p-2 text-red-600 hover:bg-red-100 rounded-full transition disabled:opacity-40"
+                          title="Delete User"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+
+                        {/* Block / Unblock — dispatches PATCH via adminSlice */}
+                        <button
+                          onClick={() => handleToggleBlock(user)}
+                          disabled={loadingBlock}
+                          className={`p-2 rounded-full transition disabled:opacity-40 ${
+                            user.blocked
+                              ? "text-green-600 hover:bg-green-100"
+                              : "text-gray-600 hover:bg-gray-100"
                           }`}
-                        title={user.blocked ? "Unblock User" : "Block User"}
-                      >
-                        {user.blocked ? <Unlock size={18} /> : <Lock size={18} />}
-                      </button>
+                          title={user.blocked ? "Unblock User" : "Block User"}
+                        >
+                          {user.blocked ? (
+                            <Unlock size={18} />
+                          ) : (
+                            <Lock size={18} />
+                          )}
+                        </button>
+
+                      </div>
                     </td>
                   </tr>
                 ))}

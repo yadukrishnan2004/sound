@@ -25,7 +25,6 @@ function ManageProducts() {
 
   const fetchData = async () => {
     try {
-      // Use ENDPOINTS.PRODUCTS.LIST which relies on /users/allproducts as per legacy
       const res = await api.get(ENDPOINTS.PRODUCTS.LIST);
       setProducts(res.data?.data || res.data || []);
     } catch (error) {

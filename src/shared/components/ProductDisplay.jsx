@@ -6,111 +6,79 @@ import { ENDPOINTS } from "../../services/endpoints";
 function ProductDisplay() {
     const [searchName, setSearchName] = useState("");
 
-    // 🔎 Raw products from backend
-    const [products, setProducts] = useState([]);
-
-    // 🎯 Frontend filters
+    // backend filters
     const [selectedType, setSelectedType] = useState("");
     const [minPrice, setMinPrice] = useState("");
     const [maxPrice, setMaxPrice] = useState("");
 
-    // 🎯 Filtered view
-    const [filteredProducts, setFilteredProducts] = useState([]);
+    // products from backend
+    const [products, setProducts] = useState([]);
 
     const [loading, setLoading] = useState(false);
 
-    // 📄 Pagination
+    // pagination
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 8;
 
-    // ============================================
-    // 🔎 BACKEND SEARCH + SHOW ALL IF EMPTY RESULT
-    // ============================================
+    // =====================================================
+    //  BACKEND FILTER + SEARCH (Race-safe + Cancel request)
+    // =====================================================
     useEffect(() => {
-        const delay = setTimeout(async () => {
+        const controller = new AbortController();
+
+        const fetchProducts = async () => {
             try {
                 setLoading(true);
 
-                let res;
+                const params = {
+                    search: searchName || "",
+                    category: selectedType || "",
+                    min_price: minPrice || "",
+                    max_price: maxPrice || "",
+                };
 
-                // ✅ If search empty → fetch all products
-                if (!searchName.trim()) {
-                    res = await api.get(ENDPOINTS.PRODUCTS.LIST);
-                } else {
-                    res = await api.get(
-                        `${ENDPOINTS.SEARCH.SEARCH}?q=${searchName}`
-                    );
-                }
+                const res = await api.get(
+                    ENDPOINTS.PRODUCTS.FILTER,
+                    {
+                        params,
+                        signal: controller.signal, //  cancel previous request
+                    }
+                );
 
                 let result = res.data?.data || [];
-                // Handle case where result might be wrapped differently or null
-                if (!Array.isArray(result)) {
-                    result = [];
-                }
-
-                // ✅ If search exists but no result → fallback to all products
-                if (searchName.trim() && result.length === 0) {
-                    const allRes = await api.get(ENDPOINTS.PRODUCTS.LIST);
-                    result = allRes.data?.data || [];
-                    if (!Array.isArray(result)) {
-                        result = [];
-                    }
-                }
+                if (!Array.isArray(result)) result = [];
 
                 setProducts(result);
                 setCurrentPage(1);
             } catch (err) {
+                // Ignore cancelled requests
+                if (err.name === "CanceledError" || err.name === "AbortError") {
+                    return;
+                }
                 console.error("Fetch failed:", err);
                 setProducts([]);
             } finally {
                 setLoading(false);
             }
-        }, 400); // debounce
+        };
 
-        return () => clearTimeout(delay);
-    }, [searchName]);
+        // 🔥 debounce
+        const timer = setTimeout(fetchProducts, 400);
 
-    // ============================================
-    // 🎯 FRONTEND FILTERS
-    // ============================================
-    useEffect(() => {
-        let filtered = [...products];
+        // 🔥 cleanup: cancel request + timeout
+        return () => {
+            clearTimeout(timer);
+            controller.abort();
+        };
+    }, [searchName, selectedType, minPrice, maxPrice]);
 
-        if (selectedType) {
-            filtered = filtered.filter((p) =>
-                (p.category || "")
-                    .toLowerCase()
-                    .includes(selectedType.toLowerCase())
-            );
-        }
-
-        if (minPrice || maxPrice) {
-            const min = minPrice ? Number(minPrice) : 0;
-            const max = maxPrice ? Number(maxPrice) : Infinity;
-
-            filtered = filtered.filter((p) => {
-                const price = Number(p.price);
-                return price >= min && price <= max;
-            });
-        }
-
-        setFilteredProducts(filtered);
-        setCurrentPage(1);
-    }, [products, selectedType, minPrice, maxPrice]);
-
-    const handleClearFilters = () => {
-        setSelectedType("");
-        setMinPrice("");
-        setMaxPrice("");
-    };
-
-    // ============================================
-    // 📄 PAGINATION
-    // ============================================
-    const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+    // =====================================================
+    //  FRONTEND PAGINATION
+    // =====================================================
+    const totalPages = Math.ceil(products.length / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;
 
-    const currentProducts = filteredProducts.slice(
+    const currentProducts = products.slice(
         startIndex,
         startIndex + itemsPerPage
     );
@@ -122,9 +90,15 @@ function ProductDisplay() {
         }
     };
 
+    const handleClearFilters = () => {
+        setSelectedType("");
+        setMinPrice("");
+        setMaxPrice("");
+    };
+
     return (
         <div className="p-6">
-            {/* 🔎 SEARCH + FILTERS */}
+            {/* SEARCH + FILTER UI */}
             <div className="max-w-4xl mx-auto mb-8 bg-white/20 backdrop-blur-md shadow-lg rounded-lg p-6">
                 <h2 className="text-xl font-semibold mb-4 text-white">
                     Search Products
@@ -138,7 +112,6 @@ function ProductDisplay() {
                     placeholder="Search from backend..."
                 />
 
-                {/* FILTERS */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     {/* CATEGORY */}
                     <div>
@@ -167,7 +140,6 @@ function ProductDisplay() {
                         <label className="block text-sm text-white mb-2">
                             Price (₹)
                         </label>
-
                         <div className="flex gap-2">
                             <input
                                 type="number"
@@ -200,7 +172,7 @@ function ProductDisplay() {
                 <div className="mt-4 text-sm text-white/80">
                     {loading
                         ? "Searching..."
-                        : `Showing ${currentProducts.length} of ${filteredProducts.length}`}
+                        : `Showing ${currentProducts.length} of ${products.length}`}
                 </div>
             </div>
 
@@ -236,10 +208,11 @@ function ProductDisplay() {
                         <button
                             key={i}
                             onClick={() => handlePageChange(i + 1)}
-                            className={`px-3 py-1 rounded ${currentPage === i + 1
+                            className={`px-3 py-1 rounded ${
+                                currentPage === i + 1
                                     ? "bg-green-500 text-white"
                                     : "bg-gray-700 text-gray-200"
-                                }`}
+                            }`}
                         >
                             {i + 1}
                         </button>

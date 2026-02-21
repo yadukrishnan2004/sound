@@ -27,15 +27,19 @@ const ManageProducts = lazy(() => import('../modules/admin/pages/ManageProducts'
 const ManageOrders = lazy(() => import('../modules/admin/pages/ManageOrders'));
 
 function AppRouter() {
-    const { user } = useSelector((state) => state.auth);
+    const { user, isAuthChecked } = useSelector((state) => state.auth);
+
+    if (!isAuthChecked) {
+        return <div className="flex justify-center items-center h-screen bg-black text-white">Loading...</div>;
+    }
 
     return (
         <Suspense fallback={<div className="flex justify-center items-center h-screen bg-black text-white">Loading...</div>}>
             <Routes>
                 {/* Public Routes */}
                 <Route path="/" element={<Home />} />
-                <Route path="/login" element={!user ? <Loginpage /> : <Navigate to="/" />} />
-                <Route path="/signup" element={!user ? <Registration /> : <Navigate to="/" />} />
+                <Route path="/login" element={!user ? <Loginpage /> : user.role === 'admin' ? <Navigate to="/admin" /> : <Navigate to="/" />} />
+                <Route path="/signup" element={!user ? <Registration /> : user.role === 'admin' ? <Navigate to="/admin" /> : <Navigate to="/" />} />
                 <Route path="/verify-otp" element={<OtpVerify />} />
                 <Route path="/Product/:id" element={<ProductDetail />} />
                 <Route path="/allproducts" element={<AllProducts />} />
