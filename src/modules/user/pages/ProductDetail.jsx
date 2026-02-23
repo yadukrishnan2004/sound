@@ -22,7 +22,7 @@ function ProductDetail() {
         dispatch(getProduct(id));
         return () => {
             dispatch(resetProduct());
-        }
+        };
     }, [dispatch, id]);
 
     useEffect(() => {
@@ -90,13 +90,12 @@ function ProductDetail() {
 
     const handleBuyNow = () => {
         if (!user) {
+            // Fixed: removed dangling `api.post` reference
             toast.error("Please login to buy");
-            api.post
             return;
         }
         navigate("/checkout", { state: { product: product, quantity: 1 } });
     };
-
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black text-white">

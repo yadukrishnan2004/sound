@@ -16,6 +16,7 @@ function CheckoutDisplay() {
     const { cartItems } = useSelector((state) => state.cart);
 
     const buyNowProduct = location.state?.product;
+    // Fixed: capture actual quantity from navigation state
     const buyNowQuantity = location.state?.quantity || 1;
 
     const currentCart = buyNowProduct
@@ -27,7 +28,6 @@ function CheckoutDisplay() {
     const [showAddressForm, setShowAddressForm] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState("COD");
 
-    // ✅ Address state aligned with backend struct
     const [newAddress, setNewAddress] = useState({
         name: "",
         phone: "",
@@ -66,9 +66,7 @@ function CheckoutDisplay() {
         try {
             const res = await api.get(ENDPOINTS.ADDRESS.GET);
             const addressList = res?.data?.data || [];
-
             setAddresses(addressList);
-
             if (addressList.length > 0) {
                 setSelectedAddress(addressList[0].id);
             }
@@ -83,10 +81,8 @@ function CheckoutDisplay() {
 
     const handleAddAddress = async (e) => {
         e.preventDefault();
-
         try {
             await api.post(ENDPOINTS.ADDRESS.CREATE, newAddress);
-
             setNewAddress({
                 name: "",
                 phone: "",
@@ -96,10 +92,8 @@ function CheckoutDisplay() {
                 state: "",
                 pin_code: "",
             });
-
             setShowAddressForm(false);
             await fetchAddresses();
-
             toast.success("Address added successfully");
         } catch (err) {
             console.error("Error adding address:", err);
@@ -122,7 +116,8 @@ function CheckoutDisplay() {
             if (buyNowProduct) {
                 res = await api.post(ENDPOINTS.ORDERS.BUY, {
                     product_id: buyNowProduct.id,
-                    quantity: 1, // Default quantity for now
+                    // Fixed: use the actual buyNowQuantity instead of hardcoded 1
+                    quantity: buyNowQuantity,
                     address_id: selectedAddress,
                     payment_method: paymentMethod,
                 });
@@ -137,8 +132,7 @@ function CheckoutDisplay() {
             dispatch(getUserProfile());
 
             toast.success(
-                `Order placed! Order ID: ${res.data?.data?.id || "N/A"
-                }`
+                `Order placed! Order ID: ${res.data?.data?.id || "N/A"}`
             );
 
             navigate("/myorders");
@@ -254,7 +248,7 @@ function CheckoutDisplay() {
                         </button>
                     </div>
 
-                    {/* ================= ADDRESS FORM ================= */}
+                    {/* ADDRESS FORM */}
                     {showAddressForm && (
                         <form
                             onSubmit={handleAddAddress}

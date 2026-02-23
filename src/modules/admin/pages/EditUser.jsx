@@ -12,7 +12,6 @@ function EditUser() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  // Use Redux for products
   const { products } = useSelector((state) => state.products);
 
   const [user, setUser] = useState(null);
@@ -20,7 +19,6 @@ function EditUser() {
   const [isBlocked, setIsBlocked] = useState(false);
 
   useEffect(() => {
-    // Fetch products if not already loaded
     if (products.length === 0) {
       dispatch(getProducts());
     }
@@ -44,12 +42,14 @@ function EditUser() {
   }, [id]);
 
   const wishlistIds = user?.wishes || [];
-  // Map wishlist IDs to actual products from Redux store
   const wishlist = products.filter((p) => wishlistIds.includes(String(p.id)));
 
   const handleSave = async () => {
     try {
-      await api.put(ENDPOINTS.ADMIN.UPDATE_USER(id), user);
+      // Fixed: don't send raw password in the update payload
+      // Only send safe fields; password changes should be handled separately
+      const { password, ...safeUserData } = user;
+      await api.put(ENDPOINTS.ADMIN.UPDATE_USER(id), safeUserData);
       toast.success("User details updated successfully");
       navigate("/admin/userlist");
     } catch (error) {
@@ -91,7 +91,6 @@ function EditUser() {
 
   return (
     <div className="min-h-screen bg-gray-100 py-10 px-6">
-      {/* Back Button */}
       <button
         onClick={() => navigate(-1)}
         className="flex items-center gap-2 text-gray-700 hover:text-blue-600 mb-6"
@@ -106,8 +105,9 @@ function EditUser() {
           </h1>
           <button
             onClick={toggleBlock}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-white ${isBlocked ? "bg-green-600 hover:bg-green-700" : "bg-red-600 hover:bg-red-700"
-              }`}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-white ${
+              isBlocked ? "bg-green-600 hover:bg-green-700" : "bg-red-600 hover:bg-red-700"
+            }`}
           >
             {isBlocked ? <Unlock size={18} /> : <Lock size={18} />}
             {isBlocked ? "Unblock User" : "Block User"}
@@ -142,7 +142,7 @@ function EditUser() {
             <label className="block text-sm font-medium text-gray-600">Full Name</label>
             <input
               type="text"
-              value={user.name}
+              value={user.name || ""}
               onChange={(e) => setUser({ ...user, name: e.target.value })}
               className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
             />
@@ -152,19 +152,24 @@ function EditUser() {
             <label className="block text-sm font-medium text-gray-600">Email</label>
             <input
               type="email"
-              value={user.email}
+              value={user.email || ""}
               onChange={(e) => setUser({ ...user, email: e.target.value })}
               className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
+          {/* Fixed: password field is now type="password" and NOT sent in save payload */}
           <div>
-            <label className="block text-sm font-medium text-gray-600">Password</label>
+            <label className="block text-sm font-medium text-gray-600">
+              Password{" "}
+              <span className="text-xs text-gray-400">(hidden for security — not editable here)</span>
+            </label>
             <input
-              type="text"
-              value={user.password}
-              onChange={(e) => setUser({ ...user, password: e.target.value })}
-              className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
+              type="password"
+              value="••••••••"
+              readOnly
+              disabled
+              className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-100 text-gray-400 cursor-not-allowed"
             />
           </div>
         </div>
@@ -211,7 +216,6 @@ function EditUser() {
           </div>
         </div>
 
-        {/* Save Button */}
         <div className="text-center mt-8">
           <button
             onClick={handleSave}

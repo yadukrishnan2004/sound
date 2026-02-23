@@ -16,18 +16,19 @@ function Loginpage() {
     );
 
     useEffect(() => {
-        if (isError) {
-            // Handle error display if needed beyond the message
-        }
+        // Navigate on successful login — this is the correct place for redirect
         if (isSuccess || user) {
-            if (user.role == "admin") {
-                navigate("/admin")
+            if (user?.role === "admin") {
+                navigate("/admin");
             } else {
-                navigate("/")
+                navigate("/");
             }
         }
 
-        dispatch(reset());
+        // Reset auth state flags after handling
+        if (isSuccess || isError) {
+            dispatch(reset());
+        }
     }, [user, isError, isSuccess, message, navigate, dispatch]);
 
     const handleSubmit = (e) => {
@@ -42,14 +43,8 @@ function Loginpage() {
             return;
         }
 
+        // Dispatch login — navigation is handled in the useEffect above
         dispatch(login({ email: formdata.email, password: formdata.password }));
-        if (isSuccess || user) {
-            if (user.role == "admin") {
-                navigate("/admin")
-            } else {
-                navigate("/")
-            }
-        }
     };
 
     return (
@@ -130,7 +125,6 @@ function Loginpage() {
                     >
                         Sign Up
                     </Link>
-
                 </p>
             </div>
         </div>

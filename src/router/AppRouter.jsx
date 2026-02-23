@@ -8,7 +8,7 @@ import AdminRoute from './AdminRoute';
 const Loginpage = lazy(() => import('../modules/user/pages/Loginpage'));
 const Registration = lazy(() => import('../modules/user/pages/Registration'));
 const OtpVerify = lazy(() => import('../modules/user/pages/OtpVerify'));
-const Home = lazy(() => import('../modules/user/pages/Home'));
+const Homepage = lazy(() => import('../modules/user/pages/Homepage'));
 const ProductDetail = lazy(() => import('../modules/user/pages/ProductDetail'));
 const AllProducts = lazy(() => import('../modules/user/pages/AllProducts'));
 const CartDisplay = lazy(() => import('../modules/user/pages/CartDisplay'));
@@ -26,26 +26,51 @@ const EditUser = lazy(() => import('../modules/admin/pages/EditUser'));
 const ManageProducts = lazy(() => import('../modules/admin/pages/ManageProducts'));
 const ManageOrders = lazy(() => import('../modules/admin/pages/ManageOrders'));
 
+const Loader = () => (
+    <div className="flex justify-center items-center h-screen bg-black text-white">
+        Loading...
+    </div>
+);
+
 function AppRouter() {
     const { user, isAuthChecked } = useSelector((state) => state.auth);
 
     if (!isAuthChecked) {
-        return <div className="flex justify-center items-center h-screen bg-black text-white">Loading...</div>;
+        return <Loader />;
     }
 
     return (
-        <Suspense fallback={<div className="flex justify-center items-center h-screen bg-black text-white">Loading...</div>}>
+        <Suspense fallback={<Loader />}>
             <Routes>
                 {/* Public Routes */}
-                <Route path="/" element={<Home />} />
-                <Route path="/login" element={!user ? <Loginpage /> : user.role === 'admin' ? <Navigate to="/admin" /> : <Navigate to="/" />} />
-                <Route path="/signup" element={!user ? <Registration /> : user.role === 'admin' ? <Navigate to="/admin" /> : <Navigate to="/" />} />
+                <Route path="/" element={<Homepage />} />
+                <Route path="/home" element={<Homepage />} />
+
+                {/* Redirect logged-in users away from auth pages */}
+                <Route
+                    path="/login"
+                    element={
+                        !user ? <Loginpage /> :
+                        user.role === 'admin' ? <Navigate to="/admin" replace /> :
+                        <Navigate to="/" replace />
+                    }
+                />
+                <Route
+                    path="/signup"
+                    element={
+                        !user ? <Registration /> :
+                        user.role === 'admin' ? <Navigate to="/admin" replace /> :
+                        <Navigate to="/" replace />
+                    }
+                />
                 <Route path="/verify-otp" element={<OtpVerify />} />
                 <Route path="/Product/:id" element={<ProductDetail />} />
                 <Route path="/allproducts" element={<AllProducts />} />
 
                 {/* Protected User Routes */}
                 <Route element={<ProtectedRoute />}>
+                    {/* Support both /cart and /Cart for compatibility */}
+                    <Route path="/cart" element={<CartDisplay />} />
                     <Route path="/Cart" element={<CartDisplay />} />
                     <Route path="/wishlist" element={<WishlistDisplay />} />
                     <Route path="/account" element={<AccountDetails />} />
@@ -64,7 +89,7 @@ function AppRouter() {
                 </Route>
 
                 {/* Fallback */}
-                <Route path="*" element={<Navigate to="/" />} />
+                <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
         </Suspense>
     );

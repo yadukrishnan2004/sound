@@ -3,7 +3,8 @@ import { Search, Plus, Loader2, Trash2, Pencil } from "lucide-react";
 import toast from "react-hot-toast";
 import api from "../../../services/api";
 import { ENDPOINTS } from "../../../services/endpoints";
-import EditProductModal from "../components/EditProductModal";
+// Fixed: import matches the actual filename casing (Editproductmodal.jsx)
+import EditProductModal from "../components/Editproductmodal";
 
 // ─── constants ───────────────────────────────────────────────────────────────
 
@@ -31,15 +32,11 @@ function ManageProducts() {
   const [searchTerm, setSearchTerm] = useState("");
   const [formData, setFormData] = useState(EMPTY_FORM);
 
-  // The product currently being edited (null = modal hidden)
   const [editTarget, setEditTarget] = useState(null);
-
-  // ── data fetching ──────────────────────────────────────────────────────────
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
     try {
-      // Use the admin endpoint so the data matches the Go Product struct exactly
       const res = await api.get(ENDPOINTS.ADMIN.PRODUCTS.LIST);
       setProducts(res.data?.data || res.data || []);
     } catch {
@@ -52,8 +49,6 @@ function ManageProducts() {
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
-
-  // ── add product ────────────────────────────────────────────────────────────
 
   const handleAdd = async () => {
     if (!formData.name.trim() || !formData.price || !formData.category.trim()) {
@@ -87,8 +82,6 @@ function ManageProducts() {
     }
   };
 
-  // ── delete product ─────────────────────────────────────────────────────────
-
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this product? This action cannot be undone.")) return;
 
@@ -98,18 +91,14 @@ function ManageProducts() {
       toast.success("Product deleted");
     } catch {
       toast.error("Failed to delete product");
-    } 
+    }
   };
-
-  // ── after modal saves ──────────────────────────────────────────────────────
 
   const handleSaved = (updated) => {
     setProducts((prev) =>
       prev.map((p) => (p.id === updated.id ? updated : p))
     );
   };
-
-  // ── helpers ────────────────────────────────────────────────────────────────
 
   const set = (key) => (e) =>
     setFormData((prev) => ({ ...prev, [key]: e.target.value }));
@@ -119,8 +108,6 @@ function ManageProducts() {
       p.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       p.category?.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  // ── render ─────────────────────────────────────────────────────────────────
 
   if (loading) {
     return (
@@ -134,7 +121,7 @@ function ManageProducts() {
   return (
     <div className="min-h-screen bg-gray-100 p-6 lg:p-10">
 
-      {/* ── Page header ─────────────────────────────────────────────────── */}
+      {/* Page header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <h1 className="text-3xl font-bold text-gray-800">🎧 Product Management</h1>
 
@@ -150,14 +137,13 @@ function ManageProducts() {
         </div>
       </div>
 
-      {/* ── Add product form ─────────────────────────────────────────────── */}
+      {/* Add product form */}
       <div className="bg-white rounded-2xl shadow-md border p-6 mb-10">
         <h2 className="text-lg font-semibold text-gray-700 mb-5 border-b pb-3 flex items-center gap-2">
           <Plus size={18} className="text-green-600" /> Add New Product
         </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {/* Name */}
           <div className="flex flex-col gap-1">
             <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
               Name <span className="text-red-500">*</span>
@@ -166,7 +152,6 @@ function ManageProducts() {
               value={formData.name} onChange={set("name")} />
           </div>
 
-          {/* Category */}
           <div className="flex flex-col gap-1">
             <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
               Category <span className="text-red-500">*</span>
@@ -175,7 +160,6 @@ function ManageProducts() {
               value={formData.category} onChange={set("category")} />
           </div>
 
-          {/* Price */}
           <div className="flex flex-col gap-1">
             <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
               Price (₹) <span className="text-red-500">*</span>
@@ -184,35 +168,30 @@ function ManageProducts() {
               value={formData.price} onChange={set("price")} />
           </div>
 
-          {/* Stock */}
           <div className="flex flex-col gap-1">
             <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Stock</label>
             <input className={inputCls} type="number" min="0" placeholder="0"
               value={formData.stock} onChange={set("stock")} />
           </div>
 
-          {/* Offer */}
           <div className="flex flex-col gap-1">
             <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Offer Label</label>
             <input className={inputCls} placeholder='e.g. "10% OFF"'
               value={formData.offer} onChange={set("offer")} />
           </div>
 
-          {/* Offer Price */}
           <div className="flex flex-col gap-1">
             <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Offer Price (₹)</label>
             <input className={inputCls} type="number" min="0" placeholder="0"
               value={formData.offerprice} onChange={set("offerprice")} />
           </div>
 
-          {/* Production */}
           <div className="flex flex-col gap-1 sm:col-span-2 lg:col-span-3">
             <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Production / Origin</label>
             <input className={inputCls} placeholder="e.g. Made in Japan"
               value={formData.production} onChange={set("production")} />
           </div>
 
-          {/* Image URL (first) */}
           <div className="flex flex-col gap-1 sm:col-span-2 lg:col-span-3">
             <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Image URL</label>
             <input className={inputCls} placeholder="https://…"
@@ -223,7 +202,6 @@ function ManageProducts() {
             />
           </div>
 
-          {/* Description */}
           <div className="flex flex-col gap-1 sm:col-span-2 lg:col-span-3">
             <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Description</label>
             <textarea
@@ -248,7 +226,7 @@ function ManageProducts() {
         </button>
       </div>
 
-      {/* ── Product grid ─────────────────────────────────────────────────── */}
+      {/* Product grid */}
       {filteredProducts.length === 0 ? (
         <p className="text-center text-gray-500 mt-16">
           {searchTerm ? `No products matching "${searchTerm}"` : "No products found."}
@@ -266,7 +244,7 @@ function ManageProducts() {
         </div>
       )}
 
-      {/* ── Edit modal ───────────────────────────────────────────────────── */}
+      {/* Edit modal */}
       <EditProductModal
         product={editTarget}
         onClose={() => setEditTarget(null)}
@@ -283,7 +261,6 @@ function ProductCard({ product, onEdit, onDelete }) {
 
   return (
     <div className="bg-white rounded-2xl border shadow-md hover:shadow-lg transition flex flex-col overflow-hidden">
-      {/* Image */}
       <div className="relative h-44 bg-gray-100">
         <img
           src={images?.[0]}
@@ -300,7 +277,6 @@ function ProductCard({ product, onEdit, onDelete }) {
         )}
       </div>
 
-      {/* Info */}
       <div className="p-4 flex flex-col flex-1 gap-1">
         <p className="text-xs text-blue-600 font-semibold uppercase tracking-wide">{category}</p>
         <h3 className="font-bold text-gray-800 text-sm line-clamp-1">{name}</h3>
@@ -325,7 +301,6 @@ function ProductCard({ product, onEdit, onDelete }) {
         </div>
       </div>
 
-      {/* Actions */}
       <div className="flex border-t">
         <button
           onClick={onEdit}

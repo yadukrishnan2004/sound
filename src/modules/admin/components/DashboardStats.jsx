@@ -21,7 +21,6 @@ const DashboardStats = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    // ✅ Fetch users + orders together (cleaner + safer)
     useEffect(() => {
         const fetchDashboardData = async () => {
             try {
@@ -32,10 +31,7 @@ const DashboardStats = () => {
                     api.get(ENDPOINTS.ADMIN.ORDERS),
                 ]);
 
-                // USERS
                 setUsers(usersRes.data?.data || []);
-
-                // ORDERS (IMPORTANT: Items array)
                 setOrders(ordersRes.data?.data?.Items || []);
             } catch (err) {
                 console.error("Dashboard fetch error:", err);
@@ -47,14 +43,12 @@ const DashboardStats = () => {
         fetchDashboardData();
     }, []);
 
-    const now = new Date();
-
-    // ✅ NEW USERS THIS MONTH
+    // Fixed: `now` is now inside useMemo so it doesn't go stale on re-renders
     const newUsers = useMemo(() => {
+        const now = new Date();
         return users.filter((u) => {
             if (!u.created_at) return false;
             const created = new Date(u.created_at);
-
             return (
                 created.getUTCFullYear() === now.getUTCFullYear() &&
                 created.getUTCMonth() === now.getUTCMonth()
@@ -62,56 +56,48 @@ const DashboardStats = () => {
         });
     }, [users]);
 
-    // ✅ TOTAL SALES (status === complete)
+    // Fixed: check for "completed" and "complete" to be safe
     const totalIncome = useMemo(() => {
         return orders
-            .filter((order) => order.status === "complete")
+            .filter((order) => order.status === "complete" || order.status === "completed")
             .reduce((sum, order) => sum + (order.total || 0), 0);
     }, [orders]);
 
-    // ✅ PENDING ORDERS
     const pendingOrders = useMemo(() => {
         return orders.filter((order) => order.status === "pending");
     }, [orders]);
 
+    // Fixed: removed fake hardcoded percentage changes; now shows real counts only
     const stats = [
         {
             title: "TOTAL USERS",
             value: `${users.length}`,
-            change: "↑ 24.5%",
-            note: "Since last month",
+            note: "All registered users",
             color: "from-blue-500 to-cyan-500",
-            trend: "text-green-400",
             icon: "🚀",
             chartColor: "bg-blue-400",
         },
         {
-            title: "NEW USERS",
+            title: "NEW USERS (This Month)",
             value: `${newUsers.length}`,
-            change: "↓ 3.5%",
-            note: "Since last week",
+            note: "Registered this month",
             color: "from-purple-500 to-pink-500",
-            trend: "text-red-400",
             icon: "👥",
             chartColor: "bg-purple-400",
         },
         {
-            title: "SALES",
-            value: `${totalIncome}`,
-            change: "↓ 11.0%",
-            note: "Since yesterday",
+            title: "TOTAL SALES (₹)",
+            value: `₹${totalIncome.toLocaleString("en-IN")}`,
+            note: "From completed orders",
             color: "from-rose-500 to-orange-500",
-            trend: "text-red-400",
             icon: "💰",
             chartColor: "bg-rose-400",
         },
         {
-            title: "Pending Order",
+            title: "PENDING ORDERS",
             value: `${pendingOrders.length}`,
-            change: "↑ 12%",
-            note: "Since last month",
+            note: "Awaiting processing",
             color: "from-emerald-500 to-teal-500",
-            trend: "text-green-400",
             icon: "⚡",
             chartColor: "bg-emerald-400",
         },
@@ -159,9 +145,6 @@ const DashboardStats = () => {
 
                             <div className="flex items-center justify-between mt-4">
                                 <div>
-                                    <p className={`text-sm font-semibold ${stat.trend}`}>
-                                        {stat.change}
-                                    </p>
                                     <p className="text-xs text-white/70 mt-1">
                                         {stat.note}
                                     </p>

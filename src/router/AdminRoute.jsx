@@ -4,8 +4,9 @@ import { useSelector } from 'react-redux';
 
 const AdminRoute = ({ children }) => {
     const { user } = useSelector((state) => state.auth);
-    
-    if (!user || user.role != "admin") {
+
+    // Fixed: use strict equality (!==) instead of loose (!=)
+    if (!user || user.role !== "admin") {
         return <Navigate to="/login" replace />;
     }
 
