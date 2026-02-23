@@ -3,144 +3,137 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import api from "../../../services/api";
 import { ENDPOINTS } from "../../../services/endpoints";
+import Navbar from "../../../shared/components/Navbar";
+import Footer from "../../../shared/components/Footer";
+import { Package, ChevronRight, RefreshCw, ArrowRight } from "lucide-react";
+
+const STATUS_STYLES = {
+  Pending:   { bg: "bg-amber-50",   text: "text-amber-600",  dot: "bg-amber-400" },
+  Shipped:   { bg: "bg-blue-50",    text: "text-blue-600",   dot: "bg-blue-400" },
+  Delivered: { bg: "bg-emerald-50", text: "text-emerald-600",dot: "bg-emerald-400" },
+  Cancelled: { bg: "bg-red-50",     text: "text-red-500",    dot: "bg-red-400" },
+};
 
 function MyOrders() {
-    const navigate = useNavigate();
-    const { user } = useSelector((state) => state.auth);
-    const [orders, setOrders] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+  const navigate = useNavigate();
+  const { user } = useSelector((s) => s.auth);
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-    useEffect(() => {
-        if (user) {
-            fetchOrders();
-        } else {
-            setLoading(false);
-        }
-    }, [user]);
+  useEffect(() => {
+    if (user) fetchOrders();
+    else setLoading(false);
+  }, [user]);
 
-    const fetchOrders = async () => {
-        try {
-            setError(null);
-            const res = await api.get(ENDPOINTS.ORDERS.LIST);
-            const ordersData = res.data?.data?.Items || [];
-            setOrders(ordersData);
-        } catch (err) {
-            setError(err.response?.data?.message || "Failed to load orders. Please try again.");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    if (!user) {
-        return (
-            <div className="flex justify-center items-center h-screen text-white bg-black">
-                <h2 className="text-xl font-semibold">
-                    Please log in to view your orders.
-                </h2>
-            </div>
-        );
+  const fetchOrders = async () => {
+    try {
+      setError(null);
+      setLoading(true);
+      const res = await api.get(ENDPOINTS.ORDERS.LIST);
+      setOrders(res.data?.data?.Items || []);
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to load orders.");
+    } finally {
+      setLoading(false);
     }
+  };
 
-    if (loading) {
-        return (
-            <div className="flex justify-center items-center h-screen text-white bg-black">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-emerald-400 mx-auto mb-4"></div>
-                    <h2 className="text-xl font-semibold">Loading your orders...</h2>
-                </div>
-            </div>
-        );
-    }
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Navbar />
 
-    if (error) {
-        return (
-            <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800 text-white py-12 px-6">
-                <div className="max-w-6xl mx-auto">
-                    <div className="bg-red-500/20 border border-red-500 rounded-lg p-6 text-center">
-                        <h2 className="text-2xl font-bold mb-2">⚠️ Error Loading Orders</h2>
-                        <p className="text-gray-300">{error}</p>
-                        <button
-                            onClick={fetchOrders}
-                            className="mt-4 px-6 py-2 bg-emerald-500 hover:bg-emerald-600 rounded-lg font-semibold transition"
-                        >
-                            Try Again
-                        </button>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800 text-white py-12 px-6">
-            <div className="max-w-6xl mx-auto">
-                <h1 className="text-4xl font-bold text-center mb-10">🛍️ My Orders</h1>
-
-                {!orders || orders.length === 0 ? (
-                    <div className="text-center text-gray-400 text-lg mt-20">
-                        <p className="mb-4">You haven't placed any orders yet.</p>
-                        <button
-                            onClick={() => navigate("/allproducts")}
-                            className="inline-block px-6 py-3 bg-emerald-500 hover:bg-emerald-600 rounded-lg font-semibold transition"
-                        >
-                            Start Shopping
-                        </button>
-                    </div>
-                ) : (
-                    <div className="space-y-10">
-                        {orders.map((order, index) => {
-
-                            const orderId = order?.ID;
-                            const orderStatus = order?.status;
-                            const orderTotal = order?.total || 0;
-                            const orderQty = order?.Quantity || 0;
-
-                            return (
-                                <div
-                                    key={orderId || index}
-                                    className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-lg p-6"
-                                >
-                                    <div className="flex justify-between items-center border-b border-gray-600 pb-3 mb-4">
-                                        <h2 className="text-2xl font-semibold text-white">
-                                            Order ID:
-                                            <span className="text-emerald-400 font-mono ml-2">
-                                                {orderId}
-                                            </span>
-                                        </h2>
-
-                                        <span className={`font-semibold ${orderStatus === "pending"
-                                            ? "text-yellow-400"
-                                            : "text-green-400"
-                                            }`}>
-                                            {orderStatus}
-                                        </span>
-                                    </div>
-
-                                    <p className="text-gray-300">
-                                        Quantity: {orderQty}
-                                    </p>
-
-                                    <p className="text-lg text-amber-400 font-bold mt-2">
-                                        Total: ₹{Number(orderTotal).toFixed(2)}
-                                    </p>
-
-                                    <button
-                                        onClick={() => navigate(`/myorders/${orderId}`)}
-                                        className="mt-4 w-full bg-emerald-500 hover:bg-emerald-600 text-white py-2 px-4 rounded-lg font-semibold transition"
-                                    >
-                                        View Details →
-                                    </button>
-
-                                </div>
-                            );
-                        })}
-                    </div>
-
-                )}
-            </div>
+      <div className="max-w-4xl mx-auto px-4 py-10">
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">My Orders</h1>
+            <p className="text-gray-500 text-sm mt-0.5">
+              {!loading && `${orders.length} order${orders.length !== 1 ? "s" : ""}`}
+            </p>
+          </div>
+          <button
+            onClick={fetchOrders}
+            className="flex items-center gap-1.5 text-sm text-indigo-600 font-medium hover:text-indigo-700 transition"
+          >
+            <RefreshCw size={14} /> Refresh
+          </button>
         </div>
-    );
+
+        {loading ? (
+          <div className="space-y-4">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="bg-white rounded-2xl border border-gray-100 h-24 animate-pulse" />
+            ))}
+          </div>
+        ) : error ? (
+          <div className="bg-red-50 border border-red-200 rounded-2xl p-6 text-center">
+            <p className="text-red-600 font-medium mb-4">{error}</p>
+            <button onClick={fetchOrders} className="px-5 py-2.5 bg-red-500 text-white rounded-xl font-semibold text-sm hover:bg-red-600">
+              Try Again
+            </button>
+          </div>
+        ) : orders.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-24 text-center">
+            <div className="w-24 h-24 bg-indigo-50 rounded-full flex items-center justify-center mb-6">
+              <Package className="text-indigo-400" size={40} />
+            </div>
+            <h3 className="text-xl font-bold text-gray-800 mb-2">No orders yet</h3>
+            <p className="text-gray-500 text-sm mb-8">Your order history will appear here</p>
+            <button
+              onClick={() => navigate("/allproducts")}
+              className="flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold transition"
+            >
+              Start Shopping <ArrowRight size={16} />
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {orders.map((order, idx) => {
+              const orderId = order?.ID;
+              const status = order?.status || "Pending";
+              const total = order?.total || 0;
+              const qty = order?.Quantity || 0;
+              const styleMap = STATUS_STYLES[status] || STATUS_STYLES.Pending;
+
+              return (
+                <div
+                  key={orderId || idx}
+                  onClick={() => navigate(`/myorders/${orderId}`)}
+                  className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center justify-between cursor-pointer hover:shadow-md hover:border-indigo-100 transition"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center shrink-0">
+                      <Package className="text-indigo-500" size={22} />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900 text-sm">
+                        Order #{orderId}
+                      </p>
+                      <p className="text-gray-400 text-xs mt-0.5">{qty} item{qty !== 1 ? "s" : ""}</p>
+                      <p className="font-bold text-gray-900 text-sm mt-1">
+                        ₹{Number(total).toLocaleString("en-IN")}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span
+                      className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full ${styleMap.bg} ${styleMap.text}`}
+                    >
+                      <span className={`w-1.5 h-1.5 rounded-full ${styleMap.dot}`} />
+                      {status}
+                    </span>
+                    <ChevronRight size={16} className="text-gray-400" />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      <Footer />
+    </div>
+  );
 }
 
 export default MyOrders;

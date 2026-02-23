@@ -189,7 +189,7 @@ function Home() {
                                             key={category}
                                             className="px-6 py-3 bg-white/80 text-black rounded-lg font-semibold whitespace-nowrap hover:bg-white transition duration-200 shadow-md"
                                             onClick={() => {
-                                                navigate(`/catogery/${category}`);
+                                                navigate(`/category/${category}`);
                                             }}
                                         >
                                             {category}

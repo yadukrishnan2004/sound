@@ -40,6 +40,7 @@ export const ENDPOINTS = {
     ADMIN: {
         USERS: '/admin/users',
         ORDERS: '/admin/orders',
+        ORDER_DETAIL: (id) => `/admin/orders/${id}`,
         UPDATE_ORDER: (id) => `/admin/orders/${id}`,
         UPDATE_ORDER_STATUS: (id) => `/admin/orders/status/${id}`,
         DASHBOARD_GRAPHS: '/admin/dashboard-graphs',

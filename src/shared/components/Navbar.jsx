@@ -1,143 +1,215 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { ShoppingCart, Heart, Bell, User, LogIn } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { ShoppingCart, Heart, User, LogIn, Menu, X, Search } from "lucide-react";
 import { useSelector } from "react-redux";
 
-function Navbar({ color }) {
-    const { user } = useSelector((state) => state.auth);
-    const { cartItems } = useSelector((state) => state.cart);
-    const { wishlistItems } = useSelector((state) => state.wishlist);
+function Navbar() {
+  const { user } = useSelector((s) => s.auth);
+  const { cartItems } = useSelector((s) => s.cart);
+  const { wishlistItems } = useSelector((s) => s.wishlist);
+  const navigate = useNavigate();
 
-    // Fallback to user object if slices aren't populated yet
-    const wishlist = wishlistItems.length > 0 ? wishlistItems : (user?.wishlist || []);
-    const cart = cartItems.length > 0 ? cartItems : (user?.cart || []);
+  const wishlist = wishlistItems.length > 0 ? wishlistItems : user?.wishlist || [];
+  const cart = cartItems.length > 0 ? cartItems : user?.cart || [];
+  const cartCount = cart.reduce((t, i) => t + (i.Quantity || 1), 0);
 
-    const [menuOpen, setMenuOpen] = useState(false);
-    const [scroll, setScroll] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchVal, setSearchVal] = useState("");
 
-    // Calculate total cart quantity
-    const cartCount = cart.reduce((total, item) => total + (item.Quantity || 1), 0);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 60);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
-    useEffect(() => {
-        const handleScroll = () => {
-            setScroll(window.scrollY > 100);
-        };
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, []);
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchVal.trim()) {
+      navigate(`/allproducts?search=${encodeURIComponent(searchVal.trim())}`);
+      setSearchVal("");
+      setSearchOpen(false);
+    }
+  };
 
-    return (
-        <nav
-            className={`fixed w-full z-50 transition-all duration-300 ${
-                scroll ? "bg-gray-900 shadow-lg py-2 text-white" : "bg-transparent py-4"
-            } text-${color}`}
-        >
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <div className="flex h-16 justify-between items-center">
-                    {/* Logo */}
-                    <div className="flex items-center">
-                        <Link to="/" className="flex items-center gap-2">
-                            <h1 className="text-2xl font-bold">
-                                Sound<span className="text-green-400">Core</span>
-                            </h1>
-                        </Link>
-                    </div>
+  const navLinks = [
+    { to: "/", label: "Home" },
+    { to: "/allproducts", label: "Shop" },
+    { to: "/allproducts", label: "Categories" },
+    { to: "/allproducts", label: "Deals" },
+  ];
 
-                    {/* Desktop Menu */}
-                    {/* Fixed: links now point to actual defined routes */}
-                    <div className="hidden sm:flex space-x-6">
-                        <Link to="/" className="hover:text-indigo-400">
-                            Home
-                        </Link>
-                        <Link to="/allproducts" className="hover:text-indigo-400">
-                            Shop
-                        </Link>
-                        {/* <Link to="/allproducts" className="hover:text-indigo-400">
-                            Categories
-                        </Link>
-                        <Link to="/allproducts" className="hover:text-indigo-400">
-                            Deals
-                        </Link> */}
-                    </div>
+  return (
+    <>
+      <nav
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+          scrolled
+            ? "bg-white shadow-md border-b border-gray-100"
+            : "bg-white/95 backdrop-blur-sm shadow-sm"
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            {/* Logo */}
+            <Link to="/" className="flex items-center gap-1 shrink-0">
+              <span className="text-2xl font-extrabold text-gray-900 tracking-tight">
+                Sound<span className="text-indigo-600">Core</span>
+              </span>
+            </Link>
 
-                    {/* Right Side Icons */}
-                    <div className="flex items-center space-x-4">
-                        <Link to="/wishlist" className="relative hover:text-indigo-400">
-                            <Heart className="w-6 h-6" />
-                            {wishlist.length > 0 && (
-                                <span className="absolute -top-2 -right-2 bg-red-600 text-xs px-1 rounded-full">
-                                    {wishlist.length}
-                                </span>
-                            )}
-                        </Link>
-
-                        {/* Fixed: was /cart (lowercase) before, now consistently lowercase */}
-                        <Link to="/cart" className="relative hover:text-indigo-400">
-                            <ShoppingCart className="w-6 h-6" />
-                            {cart.length > 0 && (
-                                <span className="absolute -top-2 -right-2 bg-red-600 text-xs px-1 rounded-full">
-                                    {cartCount}
-                                </span>
-                            )}
-                        </Link>
-
-                        {/* <button className="hover:text-indigo-400">
-                            <Bell className="w-6 h-6" />
-                        </button> */}
-
-                        <div className="flex items-center space-x-2">
-                            {user ? (
-                                <Link
-                                    to="/account"
-                                    className="flex items-center space-x-2 bg-white/10 hover:bg-white/20 text-white px-3 py-1 rounded-lg transition-all"
-                                >
-                                    <User className="w-6 h-6 text-indigo-400" />
-                                    <span className="font-medium">
-                                        {user.name ? user.name.split(" ")[0] : user.email?.split("@")[0]}
-                                    </span>
-                                </Link>
-                            ) : (
-                                <Link
-                                    to="/login"
-                                    className="flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded-lg transition-all"
-                                >
-                                    <LogIn className="w-5 h-5" />
-                                    <span>Login</span>
-                                </Link>
-                            )}
-                        </div>
-
-                        {/* Mobile Menu Toggle */}
-                        <button
-                            className="sm:hidden p-2 rounded-md hover:bg-gray-800"
-                            onClick={() => setMenuOpen(!menuOpen)}
-                        >
-                            <svg className="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                                {menuOpen ? (
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                                ) : (
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-                                )}
-                            </svg>
-                        </button>
-                    </div>
-                </div>
+            {/* Desktop Nav Links */}
+            <div className="hidden md:flex items-center gap-8">
+              {navLinks.map((l) => (
+                <Link
+                  key={l.label}
+                  to={l.to}
+                  className="text-sm font-medium text-gray-600 hover:text-indigo-600 transition-colors"
+                >
+                  {l.label}
+                </Link>
+              ))}
             </div>
 
-            {/* Mobile Menu */}
-            {menuOpen && (
-                <div className="sm:hidden px-4 pb-3 space-y-2 bg-gray-800">
-                    <Link to="/" className="block hover:text-indigo-400">Home</Link>
-                    <Link to="/allproducts" className="block hover:text-indigo-400">Shop</Link>
-                    <Link to="/allproducts" className="block hover:text-indigo-400">Categories</Link>
-                    <Link to="/allproducts" className="block hover:text-indigo-400">Deals</Link>
-                    <Link to="/cart" className="block hover:text-indigo-400">Cart</Link>
-                    <Link to="/wishlist" className="block hover:text-indigo-400">Wishlist</Link>
-                    {user && <Link to="/account" className="block hover:text-indigo-400">Account</Link>}
-                </div>
+            {/* Right Icons */}
+            <div className="flex items-center gap-3">
+              {/* Search */}
+              <button
+                onClick={() => setSearchOpen(!searchOpen)}
+                className="p-2 rounded-full text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 transition"
+              >
+                <Search size={20} />
+              </button>
+
+              {/* Wishlist */}
+              <Link
+                to="/wishlist"
+                className="relative p-2 rounded-full text-gray-500 hover:text-rose-500 hover:bg-rose-50 transition"
+              >
+                <Heart size={20} />
+                {wishlist.length > 0 && (
+                  <span className="absolute top-0.5 right-0.5 w-4 h-4 bg-rose-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                    {wishlist.length}
+                  </span>
+                )}
+              </Link>
+
+              {/* Cart */}
+              <Link
+                to="/cart"
+                className="relative p-2 rounded-full text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 transition"
+              >
+                <ShoppingCart size={20} />
+                {cartCount > 0 && (
+                  <span className="absolute top-0.5 right-0.5 w-4 h-4 bg-indigo-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                    {cartCount}
+                  </span>
+                )}
+              </Link>
+
+              {/* Account */}
+              {user ? (
+                <Link
+                  to="/account"
+                  className="hidden sm:flex items-center gap-2 pl-3 pr-4 py-2 rounded-full border border-gray-200 hover:border-indigo-300 hover:bg-indigo-50 transition"
+                >
+                  <div className="w-7 h-7 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs font-bold">
+                    {user.name?.charAt(0).toUpperCase() || <User size={14} />}
+                  </div>
+                  <span className="text-sm font-medium text-gray-700">
+                    {user.name?.split(" ")[0]}
+                  </span>
+                </Link>
+              ) : (
+                <Link
+                  to="/login"
+                  className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 transition"
+                >
+                  <LogIn size={16} />
+                  Sign In
+                </Link>
+              )}
+
+              {/* Mobile Menu Toggle */}
+              <button
+                className="md:hidden p-2 text-gray-600 hover:text-indigo-600 transition"
+                onClick={() => setMobileOpen(!mobileOpen)}
+              >
+                {mobileOpen ? <X size={22} /> : <Menu size={22} />}
+              </button>
+            </div>
+          </div>
+
+          {/* Search Bar (Expanded) */}
+          {searchOpen && (
+            <div className="pb-3">
+              <form onSubmit={handleSearch} className="flex gap-2">
+                <input
+                  autoFocus
+                  type="text"
+                  value={searchVal}
+                  onChange={(e) => setSearchVal(e.target.value)}
+                  placeholder="Search headphones, earbuds..."
+                  className="flex-1 px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 text-sm text-gray-800"
+                />
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-700 transition"
+                >
+                  Search
+                </button>
+              </form>
+            </div>
+          )}
+        </div>
+
+        {/* Mobile Menu */}
+        {mobileOpen && (
+          <div className="md:hidden bg-white border-t border-gray-100 px-4 py-4 space-y-1">
+            {navLinks.map((l) => (
+              <Link
+                key={l.label}
+                to={l.to}
+                onClick={() => setMobileOpen(false)}
+                className="block px-3 py-2 text-sm font-medium text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg transition"
+              >
+                {l.label}
+              </Link>
+            ))}
+            {user ? (
+              <>
+                <Link
+                  to="/account"
+                  onClick={() => setMobileOpen(false)}
+                  className="block px-3 py-2 text-sm font-medium text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg"
+                >
+                  Account
+                </Link>
+                <Link
+                  to="/myorders"
+                  onClick={() => setMobileOpen(false)}
+                  className="block px-3 py-2 text-sm font-medium text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg"
+                >
+                  My Orders
+                </Link>
+              </>
+            ) : (
+              <Link
+                to="/login"
+                onClick={() => setMobileOpen(false)}
+                className="block px-3 py-2 text-sm font-semibold text-indigo-600 hover:bg-indigo-50 rounded-lg"
+              >
+                Sign In
+              </Link>
             )}
-        </nav>
-    );
+          </div>
+        )}
+      </nav>
+
+      {/* Spacer */}
+      <div className="h-16" />
+    </>
+  );
 }
 
 export default Navbar;

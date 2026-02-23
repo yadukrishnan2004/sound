@@ -11,6 +11,7 @@ const OtpVerify = lazy(() => import('../modules/user/pages/OtpVerify'));
 const Homepage = lazy(() => import('../modules/user/pages/Homepage'));
 const ProductDetail = lazy(() => import('../modules/user/pages/ProductDetail'));
 const AllProducts = lazy(() => import('../modules/user/pages/AllProducts'));
+const CategoryProducts = lazy(() => import('../modules/user/pages/CategoryProducts'));
 const CartDisplay = lazy(() => import('../modules/user/pages/CartDisplay'));
 const WishlistDisplay = lazy(() => import('../modules/user/pages/WishlistDisplay'));
 const AccountDetails = lazy(() => import('../modules/user/pages/AccountDetails'));
@@ -51,21 +52,22 @@ function AppRouter() {
                     path="/login"
                     element={
                         !user ? <Loginpage /> :
-                        user.role === 'admin' ? <Navigate to="/admin" replace /> :
-                        <Navigate to="/" replace />
+                            user.role === 'admin' ? <Navigate to="/admin" replace /> :
+                                <Navigate to="/" replace />
                     }
                 />
                 <Route
                     path="/signup"
                     element={
                         !user ? <Registration /> :
-                        user.role === 'admin' ? <Navigate to="/admin" replace /> :
-                        <Navigate to="/" replace />
+                            user.role === 'admin' ? <Navigate to="/admin" replace /> :
+                                <Navigate to="/" replace />
                     }
                 />
                 <Route path="/verify-otp" element={<OtpVerify />} />
                 <Route path="/Product/:id" element={<ProductDetail />} />
                 <Route path="/allproducts" element={<AllProducts />} />
+                <Route path="/category/:categoryName" element={<CategoryProducts />} />
 
                 {/* Protected User Routes */}
                 <Route element={<ProtectedRoute />}>

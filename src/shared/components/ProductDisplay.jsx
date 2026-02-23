@@ -2,233 +2,235 @@ import React, { useEffect, useState } from "react";
 import ProductCard from "./ProductCard";
 import api from "../../services/api";
 import { ENDPOINTS } from "../../services/endpoints";
+import { SlidersHorizontal, X } from "lucide-react";
 
-function ProductDisplay() {
-    const [searchName, setSearchName] = useState("");
+const CATEGORIES = ["Wireless", "Wired", "Earbuds", "Neckband", "Gaming", "Studio", "Luxury"];
 
-    // backend filters
-    const [selectedType, setSelectedType] = useState("");
-    const [minPrice, setMinPrice] = useState("");
-    const [maxPrice, setMaxPrice] = useState("");
+function ProductDisplay({ initialCategory = "" }) {
+  const [searchName, setSearchName] = useState("");
+  const [selectedType, setSelectedType] = useState(initialCategory);
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [showFilters, setShowFilters] = useState(false);
+  const itemsPerPage = 8;
 
-    // products from backend
-    const [products, setProducts] = useState([]);
+  useEffect(() => {
+    setSelectedType(initialCategory);
+  }, [initialCategory]);
 
-    const [loading, setLoading] = useState(false);
-
-    // pagination
-    const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 8;
-
-    // =====================================================
-    //  BACKEND FILTER + SEARCH (Race-safe + Cancel request)
-    // =====================================================
-    useEffect(() => {
-        const controller = new AbortController();
-
-        const fetchProducts = async () => {
-            try {
-                setLoading(true);
-
-                const params = {
-                    search: searchName || "",
-                    category: selectedType || "",
-                    min_price: minPrice || "",
-                    max_price: maxPrice || "",
-                };
-
-                const res = await api.get(
-                    ENDPOINTS.PRODUCTS.FILTER,
-                    {
-                        params,
-                        signal: controller.signal, //  cancel previous request
-                    }
-                );
-
-                let result = res.data?.data || [];
-                if (!Array.isArray(result)) result = [];
-
-                setProducts(result);
-                setCurrentPage(1);
-            } catch (err) {
-                // Ignore cancelled requests
-                if (err.name === "CanceledError" || err.name === "AbortError") {
-                    return;
-                }
-                console.error("Fetch failed:", err);
-                setProducts([]);
-            } finally {
-                setLoading(false);
-            }
+  useEffect(() => {
+    const controller = new AbortController();
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        const params = {
+          search: searchName || "",
+          category: selectedType || "",
+          min_price: minPrice || "",
+          max_price: maxPrice || "",
         };
-
-        // 🔥 debounce
-        const timer = setTimeout(fetchProducts, 400);
-
-        // 🔥 cleanup: cancel request + timeout
-        return () => {
-            clearTimeout(timer);
-            controller.abort();
-        };
-    }, [searchName, selectedType, minPrice, maxPrice]);
-
-    // =====================================================
-    //  FRONTEND PAGINATION
-    // =====================================================
-    const totalPages = Math.ceil(products.length / itemsPerPage);
-    const startIndex = (currentPage - 1) * itemsPerPage;
-
-    const currentProducts = products.slice(
-        startIndex,
-        startIndex + itemsPerPage
-    );
-
-    const handlePageChange = (page) => {
-        if (page >= 1 && page <= totalPages) {
-            setCurrentPage(page);
-            window.scrollTo({ top: 0, behavior: "smooth" });
-        }
+        const res = await api.get(ENDPOINTS.PRODUCTS.FILTER, {
+          params,
+          signal: controller.signal,
+        });
+        let result = res.data?.data || [];
+        if (!Array.isArray(result)) result = [];
+        setProducts(result);
+        setCurrentPage(1);
+      } catch (err) {
+        if (err.name === "CanceledError" || err.name === "AbortError") return;
+        setProducts([]);
+      } finally {
+        setLoading(false);
+      }
     };
+    const timer = setTimeout(fetchProducts, 400);
+    return () => { clearTimeout(timer); controller.abort(); };
+  }, [searchName, selectedType, minPrice, maxPrice]);
 
-    const handleClearFilters = () => {
-        setSelectedType("");
-        setMinPrice("");
-        setMaxPrice("");
-    };
+  const totalPages = Math.ceil(products.length / itemsPerPage);
+  const currentProducts = products.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
-    return (
-        <div className="p-6">
-            {/* SEARCH + FILTER UI */}
-            <div className="max-w-4xl mx-auto mb-8 bg-white/20 backdrop-blur-md shadow-lg rounded-lg p-6">
-                <h2 className="text-xl font-semibold mb-4 text-white">
-                    Search Products
-                </h2>
+  const clearFilters = () => {
+    setSelectedType("");
+    setMinPrice("");
+    setMaxPrice("");
+    setSearchName("");
+  };
 
-                <input
-                    type="text"
-                    value={searchName}
-                    onChange={(e) => setSearchName(e.target.value)}
-                    className="text-black w-full px-4 py-3 rounded-lg mb-6"
-                    placeholder="Search from backend..."
-                />
+  const hasFilters = selectedType || minPrice || maxPrice || searchName;
 
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    {/* CATEGORY */}
-                    <div>
-                        <label className="block text-sm text-white mb-2">
-                            Category
-                        </label>
-                        <select
-                            value={selectedType}
-                            onChange={(e) => setSelectedType(e.target.value)}
-                            className="text-black w-full px-4 py-2 rounded-lg"
-                        >
-                            <option value="">All</option>
-                            <option value="wired">Wired</option>
-                            <option value="wireless">Wireless</option>
-                            <option value="earbuds">Earbuds</option>
-                            <option value="neckband">Neckband</option>
-                            <option value="gaming">Gaming</option>
-                            <option value="studio">Studio</option>
-                            <option value="luxury">Luxury</option>
-                            <option value="fitness">Fitness</option>
-                        </select>
-                    </div>
-
-                    {/* PRICE */}
-                    <div>
-                        <label className="block text-sm text-white mb-2">
-                            Price (₹)
-                        </label>
-                        <div className="flex gap-2">
-                            <input
-                                type="number"
-                                value={minPrice}
-                                onChange={(e) => setMinPrice(e.target.value)}
-                                placeholder="Min"
-                                className="text-black w-1/2 px-4 py-2 rounded-lg"
-                            />
-                            <input
-                                type="number"
-                                value={maxPrice}
-                                onChange={(e) => setMaxPrice(e.target.value)}
-                                placeholder="Max"
-                                className="text-black w-1/2 px-4 py-2 rounded-lg"
-                            />
-                        </div>
-                    </div>
-
-                    {/* CLEAR */}
-                    <div className="flex items-end">
-                        <button
-                            onClick={handleClearFilters}
-                            className="w-full bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-500"
-                        >
-                            Clear Filters
-                        </button>
-                    </div>
-                </div>
-
-                <div className="mt-4 text-sm text-white/80">
-                    {loading
-                        ? "Searching..."
-                        : `Showing ${currentProducts.length} of ${products.length}`}
-                </div>
-            </div>
-
-            {/* PRODUCT GRID */}
-            <div className="max-w-screen-xl mx-auto grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                {loading ? (
-                    <div className="col-span-full text-center text-white/70 py-20">
-                        Loading...
-                    </div>
-                ) : currentProducts.length ? (
-                    currentProducts.map((product) => (
-                        <ProductCard key={product.id} data={product} />
-                    ))
-                ) : (
-                    <div className="col-span-full text-center text-white/70 py-20">
-                        No products found.
-                    </div>
-                )}
-            </div>
-
-            {/* PAGINATION */}
-            {totalPages > 1 && (
-                <div className="flex justify-center mt-8 gap-2">
-                    <button
-                        disabled={currentPage === 1}
-                        onClick={() => handlePageChange(currentPage - 1)}
-                        className="px-3 py-1 bg-gray-700 text-white rounded disabled:opacity-40"
-                    >
-                        Prev
-                    </button>
-
-                    {[...Array(totalPages)].map((_, i) => (
-                        <button
-                            key={i}
-                            onClick={() => handlePageChange(i + 1)}
-                            className={`px-3 py-1 rounded ${
-                                currentPage === i + 1
-                                    ? "bg-green-500 text-white"
-                                    : "bg-gray-700 text-gray-200"
-                            }`}
-                        >
-                            {i + 1}
-                        </button>
-                    ))}
-
-                    <button
-                        disabled={currentPage === totalPages}
-                        onClick={() => handlePageChange(currentPage + 1)}
-                        className="px-3 py-1 bg-gray-700 text-white rounded disabled:opacity-40"
-                    >
-                        Next
-                    </button>
-                </div>
-            )}
+  return (
+    <div className="max-w-7xl mx-auto px-4 py-8">
+      {/* Top Bar */}
+      <div className="flex flex-col sm:flex-row gap-3 mb-6">
+        <div className="flex-1 relative">
+          <input
+            type="text"
+            value={searchName}
+            onChange={(e) => setSearchName(e.target.value)}
+            placeholder="Search headphones, earbuds, brands..."
+            className="w-full pl-4 pr-10 py-3 border border-gray-200 rounded-xl text-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white shadow-sm"
+          />
+          {searchName && (
+            <button
+              onClick={() => setSearchName("")}
+              className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+            >
+              <X size={16} />
+            </button>
+          )}
         </div>
-    );
+        <button
+          onClick={() => setShowFilters(!showFilters)}
+          className="flex items-center gap-2 px-4 py-3 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:border-indigo-300 hover:bg-indigo-50 transition bg-white shadow-sm"
+        >
+          <SlidersHorizontal size={16} />
+          Filters
+          {hasFilters && (
+            <span className="ml-1 w-2 h-2 rounded-full bg-indigo-600 inline-block" />
+          )}
+        </button>
+        {hasFilters && (
+          <button
+            onClick={clearFilters}
+            className="flex items-center gap-1 px-4 py-3 text-sm text-rose-500 hover:text-rose-600 font-medium"
+          >
+            <X size={14} /> Clear All
+          </button>
+        )}
+      </div>
+
+      {/* Filter Panel */}
+      {showFilters && (
+        <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-5 mb-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {/* Category */}
+          <div>
+            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+              Category
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {CATEGORIES.map((c) => (
+                <button
+                  key={c}
+                  onClick={() => setSelectedType(selectedType === c ? "" : c)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition ${selectedType === c
+                    ? "bg-indigo-600 text-white border-indigo-600"
+                    : "bg-white text-gray-600 border-gray-200 hover:border-indigo-300"
+                    }`}
+                >
+                  {c}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Min Price */}
+          <div>
+            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+              Min Price (₹)
+            </label>
+            <input
+              type="number"
+              value={minPrice}
+              onChange={(e) => setMinPrice(e.target.value)}
+              placeholder="0"
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+            />
+          </div>
+
+          {/* Max Price */}
+          <div>
+            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+              Max Price (₹)
+            </label>
+            <input
+              type="number"
+              value={maxPrice}
+              onChange={(e) => setMaxPrice(e.target.value)}
+              placeholder="100000"
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Results Count */}
+      {!loading && (
+        <p className="text-sm text-gray-500 mb-5">
+          {products.length === 0
+            ? "No products found"
+            : `${products.length} product${products.length !== 1 ? "s" : ""} found`}
+        </p>
+      )}
+
+      {/* Product Grid */}
+      {loading ? (
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="bg-gray-100 rounded-2xl h-80 animate-pulse" />
+          ))}
+        </div>
+      ) : currentProducts.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-24 text-center">
+          <div className="text-6xl mb-4">🎧</div>
+          <h3 className="text-xl font-semibold text-gray-700 mb-2">No products found</h3>
+          <p className="text-gray-400 text-sm">Try adjusting your search or filters</p>
+          {hasFilters && (
+            <button
+              onClick={clearFilters}
+              className="mt-4 px-5 py-2 bg-indigo-600 text-white rounded-xl text-sm font-semibold hover:bg-indigo-700 transition"
+            >
+              Clear Filters
+            </button>
+          )}
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
+          {currentProducts.map((product) => (
+            <ProductCard key={product.id} data={product} />
+          ))}
+        </div>
+      )}
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center gap-2 mt-10">
+          <button
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+            className="px-4 py-2 rounded-lg border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
+          >
+            Prev
+          </button>
+          {Array.from({ length: totalPages }, (_, i) => i + 1)
+            .filter((p) => Math.abs(p - currentPage) <= 2)
+            .map((p) => (
+              <button
+                key={p}
+                onClick={() => { setCurrentPage(p); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                className={`w-9 h-9 rounded-lg text-sm font-semibold transition ${currentPage === p
+                  ? "bg-indigo-600 text-white"
+                  : "border border-gray-200 text-gray-600 hover:bg-gray-50"
+                  }`}
+              >
+                {p}
+              </button>
+            ))}
+          <button
+            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+            disabled={currentPage === totalPages}
+            className="px-4 py-2 rounded-lg border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
+          >
+            Next
+          </button>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default ProductDisplay;

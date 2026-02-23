@@ -2,241 +2,174 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logout, reset, getUserProfile } from "../../../features/auth/authSlice";
-import {
-    ShoppingCart,
-    Heart,
-    Package,
-    LogOut,
-    User,
-    MapPin,
-} from "lucide-react";
+import { ShoppingCart, Heart, Package, LogOut, User, MapPin, ChevronRight } from "lucide-react";
 import Navbar from "../../../shared/components/Navbar";
 import Footer from "../../../shared/components/Footer";
-import NavbarSub from "../../../shared/components/NavbarSub";
 import AddressModal from "../../../shared/components/AddressModal";
 
 function AccountDetails() {
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
-    const { user } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { user } = useSelector((s) => s.auth);
+  const [showModal, setShowModal] = useState(false);
 
-    const [showModal, setShowModal] = useState(false);
+  const wishlist = user?.wishlist || [];
+  const cart = user?.cart || [];
+  const orders = user?.orders || [];
+  const address = user?.address || [];
 
-    const wishlist = user?.wishlist || [];
-    const cart = user?.cart || [];
-    const orders = user?.orders || [];
-    const address = user?.address || [];
+  const handleLogout = () => { dispatch(logout()); dispatch(reset()); navigate("/login"); };
+  const handleSuccess = () => dispatch(getUserProfile());
 
-    const handleLogout = () => {
-        dispatch(logout());
-        dispatch(reset());
-        navigate("/login");
-    };
-
-    const handleSuccess = () => {
-        dispatch(getUserProfile());
-    }
-
-    if (!user) {
-        return (
-            <div className="flex justify-center items-center h-screen bg-gray-900 text-white">
-                <h2 className="text-xl font-semibold">
-                    No account found. Please log in.
-                </h2>
-            </div>
-        );
-    }
-
+  if (!user) {
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white">
-
-            {/* NAVBAR */}
-            <div className="sticky top-0 z-50">
-                <Navbar color={"white"} />
-            </div>
-
-            <div className="hidden md:flex sticky top-[64px] z-50 justify-center font-semibold">
-                <NavbarSub />
-            </div>
-
-            <div className="py-16 px-6">
-                <div className="max-w-6xl mx-auto bg-white/10 backdrop-blur-lg border border-white/10 rounded-2xl shadow-2xl p-8">
-
-                    {/* HEADER */}
-                    <div className="flex flex-col sm:flex-row items-center justify-between mb-10 border-b border-gray-700 pb-6">
-                        <div className="flex items-center gap-4">
-                            <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-3xl font-bold">
-                                {user.name?.charAt(0).toUpperCase()}
-                            </div>
-
-                            <div>
-                                <h1 className="text-3xl font-bold">{user.name}</h1>
-                                <p className="text-gray-400">{user.email}</p>
-                                <p className="text-sm text-indigo-400">{user.role}</p>
-                            </div>
-                        </div>
-
-                        <button
-                            onClick={handleLogout}
-                            className="mt-6 sm:mt-0 flex items-center gap-2 bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg font-semibold"
-                        >
-                            <LogOut size={18} />
-                            Log Out
-                        </button>
-                    </div>
-
-                    {/* STATS */}
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
-
-                        <div
-                            onClick={() => navigate("/Cart")}
-                            className="cursor-pointer bg-blue-500/20 border border-blue-500/30 rounded-xl p-6 text-center hover:scale-105 transition"
-                        >
-                            <ShoppingCart className="mx-auto text-blue-400 mb-2" size={28} />
-                            <h2 className="text-lg font-semibold text-blue-300">Cart</h2>
-                            <p className="text-3xl font-bold">{cart.length}</p>
-                        </div>
-
-                        <div
-                            onClick={() => navigate("/wishlist")}
-                            className="cursor-pointer bg-pink-500/20 border border-pink-500/30 rounded-xl p-6 text-center hover:scale-105 transition"
-                        >
-                            <Heart className="mx-auto text-pink-400 mb-2" size={28} />
-                            <h2 className="text-lg font-semibold text-pink-300">Wishlist</h2>
-                            <p className="text-3xl font-bold">{wishlist.length}</p>
-                        </div>
-
-                        <div
-                            onClick={() => navigate("/myorders")}
-                            className="cursor-pointer bg-green-500/20 border border-green-500/30 rounded-xl p-6 text-center hover:scale-105 transition"
-                        >
-                            <Package className="mx-auto text-green-400 mb-2" size={28} />
-                            <h2 className="text-lg font-semibold text-green-300">Orders</h2>
-                            <p className="text-3xl font-bold">{orders.length}</p>
-                        </div>
-
-                    </div>
-
-                    {/* PROFILE INFO */}
-                    <div className="bg-white/5 rounded-xl p-6 border border-white/10 mb-10">
-                        <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                            <User size={20} /> Profile Information
-                        </h3>
-
-                        <div className="grid sm:grid-cols-2 gap-6 text-gray-300">
-                            <div>
-                                <p className="text-sm text-gray-400">Full Name</p>
-                                <p className="text-lg text-white">{user.name}</p>
-                            </div>
-
-                            <div>
-                                <p className="text-sm text-gray-400">Email</p>
-                                <p className="text-lg text-white">{user.email}</p>
-                            </div>
-
-                            <div>
-                                <p className="text-sm text-gray-400">Role</p>
-                                <p className="text-lg text-white">{user.role}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* ADDRESS SECTION */}
-                    <div className="bg-white/5 rounded-xl p-6 border border-white/10 mb-10">
-
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-xl font-semibold flex items-center gap-2">
-                                <MapPin size={20} /> Address
-                            </h3>
-
-                            <button
-                                onClick={() => setShowModal(true)}
-                                className="bg-indigo-600 hover:bg-indigo-700 px-4 py-1 rounded-lg text-sm"
-                            >
-                                + Add Address
-                            </button>
-                        </div>
-
-                        {address.length ? (
-                            <ul className="space-y-2">
-                                {address.map((a, i) => (
-                                    <li key={i} className="text-gray-300">
-                                        {a.house_name}, {a.street}, {a.city}, {a.state} - {a.pin_code}
-                                    </li>
-                                ))}
-                            </ul>
-                        ) : (
-                            <p className="text-gray-500">No address added.</p>
-                        )}
-                    </div>
-
-                    {/* LIST SECTIONS */}
-                    <div className="grid md:grid-cols-3 gap-6">
-
-                        {/* CART */}
-                        <div className="bg-white/5 border border-white/10 rounded-xl p-4">
-                            <h3 className="text-blue-300 font-semibold mb-3">🛒 Cart</h3>
-                            {cart.length ? (
-                                <ul className="space-y-2">
-                                    {cart.map((item) => (
-                                        <li key={item.id} className="flex justify-between">
-                                            <span>{item.name}</span>
-                                            <span>₹{item.price}</span>
-                                        </li>
-                                    ))}
-                                </ul>
-                            ) : (
-                                <p className="text-gray-500 text-sm">No items in cart.</p>
-                            )}
-                        </div>
-
-                        {/* WISHLIST */}
-                        <div className="bg-white/5 border border-white/10 rounded-xl p-4">
-                            <h3 className="text-pink-300 font-semibold mb-3">❤️ Wishlist</h3>
-                            {wishlist.length ? (
-                                <ul className="space-y-2">
-                                    {wishlist.map((item) => (
-                                        <li key={item.id}>{item.name}</li>
-                                    ))}
-                                </ul>
-                            ) : (
-                                <p className="text-gray-500 text-sm">No wishlist items.</p>
-                            )}
-                        </div>
-
-                        {/* ORDERS */}
-                        <div className="bg-white/5 border border-white/10 rounded-xl p-4">
-                            <h3 className="text-green-300 font-semibold mb-3">📦 Orders</h3>
-                            {orders.length ? (
-                                <ul className="space-y-2">
-                                    {orders.map((order, i) => (
-                                        <li key={i} className="flex justify-between">
-                                            <span>{order.date || "Order"}</span>
-                                            <span>₹{order.total || 0}</span>
-                                        </li>
-                                    ))}
-                                </ul>
-                            ) : (
-                                <p className="text-gray-500 text-sm">No orders yet.</p>
-                            )}
-                        </div>
-
-                    </div>
-
-                </div>
-            </div>
-
-            {/* ADDRESS MODAL */}
-            {showModal && (
-                <AddressModal
-                    onClose={() => setShowModal(false)}
-                    onSuccess={handleSuccess}
-                />
-            )}
-
-            <Footer />
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <User size={48} className="text-gray-300 mx-auto mb-4" />
+          <p className="text-gray-500 mb-4">Please log in to view your account</p>
+          <button onClick={() => navigate("/login")} className="px-5 py-2.5 bg-indigo-600 text-white rounded-xl font-semibold">
+            Sign In
+          </button>
         </div>
+      </div>
     );
+  }
+
+  const STAT_CARDS = [
+    { label: "Cart", value: cart.length, icon: <ShoppingCart size={22} />, color: "indigo", to: "/cart" },
+    { label: "Wishlist", value: wishlist.length, icon: <Heart size={22} />, color: "rose", to: "/wishlist" },
+    { label: "Orders", value: orders.length, icon: <Package size={22} />, color: "amber", to: "/myorders" },
+  ];
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Navbar />
+
+      <div className="max-w-5xl mx-auto px-4 py-10">
+        {/* Profile Header */}
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 rounded-2xl bg-indigo-600 text-white flex items-center justify-center text-2xl font-bold shrink-0">
+                {user.name?.charAt(0).toUpperCase()}
+              </div>
+              <div>
+                <h1 className="text-xl font-bold text-gray-900">{user.name}</h1>
+                <p className="text-gray-500 text-sm">{user.email}</p>
+                <span className="inline-block mt-1 bg-indigo-50 text-indigo-600 text-xs font-semibold px-2 py-0.5 rounded-full capitalize">
+                  {user.role}
+                </span>
+              </div>
+            </div>
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2 px-4 py-2.5 border border-red-200 text-red-500 hover:bg-red-50 font-semibold text-sm rounded-xl transition"
+            >
+              <LogOut size={15} /> Log Out
+            </button>
+          </div>
+        </div>
+
+        {/* Stats */}
+        <div className="grid grid-cols-3 gap-4 mb-6">
+          {STAT_CARDS.map((s) => {
+            const colors = {
+              indigo: "bg-indigo-50 text-indigo-600 border-indigo-100",
+              rose: "bg-rose-50 text-rose-600 border-rose-100",
+              amber: "bg-amber-50 text-amber-600 border-amber-100",
+            };
+            return (
+              <div
+                key={s.label}
+                onClick={() => navigate(s.to)}
+                className={`cursor-pointer border rounded-2xl p-5 text-center hover:shadow-md transition-all ${colors[s.color]}`}
+              >
+                <div className="flex justify-center mb-2">{s.icon}</div>
+                <p className="text-3xl font-extrabold">{s.value}</p>
+                <p className="text-sm font-medium mt-0.5">{s.label}</p>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Quick Links */}
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-6">
+          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider px-6 py-4 border-b border-gray-100">
+            Quick Actions
+          </h2>
+          {[
+            { label: "My Orders", desc: "View and track your orders", icon: <Package size={18} />, to: "/myorders" },
+            { label: "My Wishlist", desc: "Items saved for later", icon: <Heart size={18} />, to: "/wishlist" },
+            { label: "Shopping Cart", desc: "Items ready for checkout", icon: <ShoppingCart size={18} />, to: "/cart" },
+          ].map((item) => (
+            <div
+              key={item.label}
+              onClick={() => navigate(item.to)}
+              className="flex items-center justify-between px-6 py-4 border-b border-gray-50 hover:bg-gray-50 cursor-pointer transition"
+            >
+              <div className="flex items-center gap-3">
+                <span className="text-indigo-500">{item.icon}</span>
+                <div>
+                  <p className="font-medium text-gray-900 text-sm">{item.label}</p>
+                  <p className="text-xs text-gray-400">{item.desc}</p>
+                </div>
+              </div>
+              <ChevronRight size={16} className="text-gray-400" />
+            </div>
+          ))}
+        </div>
+
+        {/* Addresses */}
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+            <h2 className="font-bold text-gray-900 flex items-center gap-2">
+              <MapPin size={16} className="text-indigo-500" /> Saved Addresses
+            </h2>
+            <button
+              onClick={() => setShowModal(true)}
+              className="text-sm text-indigo-600 font-semibold hover:text-indigo-700"
+            >
+              + Add Address
+            </button>
+          </div>
+
+          {address.length === 0 ? (
+            <div className="px-6 py-8 text-center">
+              <MapPin size={32} className="text-gray-300 mx-auto mb-3" />
+              <p className="text-gray-500 text-sm">No saved addresses yet.</p>
+              <button
+                onClick={() => setShowModal(true)}
+                className="mt-3 text-indigo-600 text-sm font-semibold"
+              >
+                Add your first address
+              </button>
+            </div>
+          ) : (
+            <div className="divide-y divide-gray-50">
+              {address.map((addr, i) => (
+                <div key={i} className="px-6 py-4">
+                  <p className="font-semibold text-gray-900 text-sm">{addr.name}</p>
+                  <p className="text-gray-500 text-sm mt-0.5">
+                    {addr.house_name}, {addr.street}, {addr.city}, {addr.state} - {addr.pin_code}
+                  </p>
+                  <p className="text-gray-500 text-sm">📞 {addr.phone}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {showModal && (
+        <AddressModal
+          onClose={() => setShowModal(false)}
+          onSuccess={handleSuccess}
+        />
+      )}
+
+      <Footer />
+    </div>
+  );
 }
 
 export default AccountDetails;
