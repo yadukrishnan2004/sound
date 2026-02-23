@@ -2,12 +2,17 @@ import React, { useEffect, useState } from "react";
 import ProductCard from "./ProductCard";
 import api from "../../services/api";
 import { ENDPOINTS } from "../../services/endpoints";
+import { useLocation } from "react-router-dom";
 import { SlidersHorizontal, X } from "lucide-react";
 
 const CATEGORIES = ["Wireless", "Wired", "Earbuds", "Neckband", "Gaming", "Studio", "Luxury"];
 
 function ProductDisplay({ initialCategory = "" }) {
-  const [searchName, setSearchName] = useState("");
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const initialSearch = searchParams.get("search") || "";
+
+  const [searchName, setSearchName] = useState(initialSearch);
   const [selectedType, setSelectedType] = useState(initialCategory);
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
@@ -22,6 +27,13 @@ function ProductDisplay({ initialCategory = "" }) {
   }, [initialCategory]);
 
   useEffect(() => {
+    const s = new URLSearchParams(location.search).get("search");
+    if (s !== null) {
+      setSearchName(s);
+    }
+  }, [location.search]);
+
+  useEffect(() => {
     const controller = new AbortController();
     const fetchProducts = async () => {
       try {
@@ -32,8 +44,18 @@ function ProductDisplay({ initialCategory = "" }) {
           min_price: minPrice || "",
           max_price: maxPrice || "",
         };
-        const res = await api.get(ENDPOINTS.PRODUCTS.FILTER, {
-          params,
+
+        let endpoint = ENDPOINTS.PRODUCTS.FILTER;
+        let queryParams = params;
+
+        // Use the explicit search endpoint if only searching
+        if (searchName && !selectedType && !minPrice && !maxPrice) {
+          endpoint = ENDPOINTS.SEARCH.SEARCH;
+          queryParams = { q: searchName };
+        }
+
+        const res = await api.get(endpoint, {
+          params: queryParams,
           signal: controller.signal,
         });
         let result = res.data?.data || [];

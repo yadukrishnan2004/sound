@@ -12,8 +12,8 @@ function Pending({ status }) {
     const [selectedOrderId, setSelectedOrderId] = useState(null);
     const [orderDetails, setOrderDetails] = useState(null);
     const [detailsLoading, setDetailsLoading] = useState(false);
+    const [fetchedAddress, setFetchedAddress] = useState(null);
 
-    // ✅ Moved OUTSIDE useEffect so handleStatusChange can access it
     const fetchOrders = useCallback(async () => {
         setLoading(true);
         try {
@@ -45,7 +45,7 @@ function Pending({ status }) {
         try {
             await api.put(ENDPOINTS.ADMIN.UPDATE_ORDER_STATUS(orderId), { status: newStatus });
             toast.success("Order status updated!");
-            await fetchOrders(); // re-fetch to reflect real backend state
+            await fetchOrders();
         } catch (err) {
             console.error("Failed to update status:", err);
             toast.error("Failed to update status");
@@ -57,9 +57,31 @@ function Pending({ status }) {
     const handleViewDetails = async (orderId) => {
         setSelectedOrderId(orderId);
         setDetailsLoading(true);
+        setFetchedAddress(null);
         try {
             const res = await api.get(ENDPOINTS.ADMIN.ORDER_DETAIL(orderId));
-            setOrderDetails(res.data?.data || []);
+            const details = res.data?.data || [];
+            setOrderDetails(details);
+
+            if (details.length > 0) {
+                const orderObj = details[0]?.Order || {};
+
+                if (orderObj?.address && Object.keys(orderObj.address).length > 0) {
+                    setFetchedAddress(orderObj.address);
+                } else if (orderObj?.user_id && orderObj?.address_id) {
+                    // Fallback to fetch address from address endpoint if not populated automatically
+                    try {
+                        const addressRes = await api.get(ENDPOINTS.ADMIN.GET_USER_ADDRESSES(orderObj.user_id));
+                        const addresses = addressRes.data?.data || addressRes.data || [];
+                        const foundAddress = addresses.find(a => a.id === orderObj.address_id);
+                        if (foundAddress) {
+                            setFetchedAddress(foundAddress);
+                        }
+                    } catch (e) {
+                        console.error("Failed to fetch user addresses:", e);
+                    }
+                }
+            }
         } catch (err) {
             toast.error("Failed to fetch order details");
             setSelectedOrderId(null);
@@ -196,8 +218,8 @@ function Pending({ status }) {
                                     {(() => {
                                         const firstItem = orderDetails[0];
                                         const orderObj = firstItem?.Order || {};
-                                        const address = orderObj?.address || {};
                                         const user = orderObj?.user || {};
+                                        const address = fetchedAddress || orderObj?.address || {};
 
                                         return (
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gray-50 p-6 rounded-xl border border-gray-100">

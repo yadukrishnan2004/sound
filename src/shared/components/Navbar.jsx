@@ -43,11 +43,10 @@ function Navbar() {
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          scrolled
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
             ? "bg-white shadow-md border-b border-gray-100"
             : "bg-white/95 backdrop-blur-sm shadow-sm"
-        }`}
+          }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
@@ -81,31 +80,34 @@ function Navbar() {
                 <Search size={20} />
               </button>
 
-              {/* Wishlist */}
-              <Link
-                to="/wishlist"
-                className="relative p-2 rounded-full text-gray-500 hover:text-rose-500 hover:bg-rose-50 transition"
-              >
-                <Heart size={20} />
-                {wishlist.length > 0 && (
-                  <span className="absolute top-0.5 right-0.5 w-4 h-4 bg-rose-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-                    {wishlist.length}
-                  </span>
-                )}
-              </Link>
+              {/* Wishlist and Cart - Only for logged in users */}
+              {user && (
+                <>
+                  <Link
+                    to="/wishlist"
+                    className="relative p-2 rounded-full text-gray-500 hover:text-rose-500 hover:bg-rose-50 transition"
+                  >
+                    <Heart size={20} />
+                    {wishlist.length > 0 && (
+                      <span className="absolute top-0.5 right-0.5 w-4 h-4 bg-rose-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                        {wishlist.length}
+                      </span>
+                    )}
+                  </Link>
 
-              {/* Cart */}
-              <Link
-                to="/cart"
-                className="relative p-2 rounded-full text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 transition"
-              >
-                <ShoppingCart size={20} />
-                {cartCount > 0 && (
-                  <span className="absolute top-0.5 right-0.5 w-4 h-4 bg-indigo-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-                    {cartCount}
-                  </span>
-                )}
-              </Link>
+                  <Link
+                    to="/cart"
+                    className="relative p-2 rounded-full text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 transition"
+                  >
+                    <ShoppingCart size={20} />
+                    {cartCount > 0 && (
+                      <span className="absolute top-0.5 right-0.5 w-4 h-4 bg-indigo-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                        {cartCount}
+                      </span>
+                    )}
+                  </Link>
+                </>
+              )}
 
               {/* Account */}
               {user ? (
